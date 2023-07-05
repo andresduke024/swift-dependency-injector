@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "79283C74-6E3E-497D-8C7A-157EB3CD75B8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "SwiftDependencyInjector",
+          "name" : "SwiftDependencyInjector"
+        }
+      ]
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "swift-dependency-injectorTests",
+        "name" : "swift-dependency-injectorTests"
+      }
+    }
+  ],
+  "version" : 1
+}
