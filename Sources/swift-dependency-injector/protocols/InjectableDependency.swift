@@ -11,7 +11,7 @@ public protocol InjectableDependency: Initializable {
     static func instance() -> Self
 }
 
-extension InjectableDependency {
+public extension InjectableDependency {
     static func instance() -> Self {
         return self.init()
     }
