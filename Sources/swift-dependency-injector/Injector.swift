@@ -54,12 +54,12 @@ public struct Injector {
         DependenciesContainer.shared.clear()
     }
     
-    /// To turn off all the information messages logged by the injector ( It Don't affect the error messages )
+    /// To turn off all the information messages logged by the injector ( It don't affect the error messages )
     public static func turnOffLogger() {
         Logger.informationLogsAreActive = false
     }
     
-    /// To turn on all the information messages logged by the injector ( It Don't affect the error messages )
+    /// To turn on all the information messages logged by the injector ( It don't affect the error messages )
     public static func turnOnLogger() {
         Logger.informationLogsAreActive = true
     }

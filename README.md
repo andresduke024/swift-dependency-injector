@@ -102,7 +102,7 @@ Now that we have all the dependencies registered into the container we can start
 For that we are going to create a DummyService. This class is going to have one property of type **Repository**. This property is going to be wrapped by a custom property wrapper named **@Injectable**.
 
 ```swift
-class DummyService: Service, InjectableDependency {
+class DummyService {
     @Injectable private var repository: Repository?
     
     func getData() -> [Int] {
@@ -117,3 +117,108 @@ For this to be possible we only have to take into account two things. The first 
 The second thing to note is that the property must be marked as an optional data type. The latter because in case the container is not able to find an implementation to inject it will return a nil.
 
 And that's all, by this point we can replicate this steps for every dependency we want to make injectable and start to using them all around in our project.
+
+## Docs
+## Injector 
+
+This a class which works as a middleware that provide us with all the functions that we can use to access to the dependencies container.
+
+### Functions
+---
+
+#### Injector.register
+
+To register into the dependencies container a new abstraction and its corresponding implementations
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol to register as dependency
+- **defaultDependency**: The key to identify the implementation that is going to be injected
+- **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+
+```swift
+func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> AnyObject?]) {}
+```
+---
+
+#### Injector.register
+
+To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction)
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol to register as dependency
+- **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+
+```swift
+func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> AnyObject?) {}
+```
+---
+
+#### Injector.updateDependencyKey
+
+To change the default implementation injected for a given abstraction by changing the key used in the container
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol (already registered) to the one we want to change the injected implementation
+- **newKey**: A unique key that identifies the new implementation that is going to be injected by default
+
+```swift
+func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: String) {}
+```
+---
+
+#### Injector.resetSingleton
+
+To reset a specific or all the instances of a singleton dependency stored in the container
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons
+- **key**: A unique key that identifies the specific implementation that is going to be reseted. Nil if we want to reset all the implementations registered for the given abstraction
+
+```swift
+func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String? = nil) {}
+```
+---
+
+#### Injector.remove
+
+To remove all the registed implementations of a given abstraction and the abstraction itself
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol that was registered as dependency
+
+```swift
+func remove<Abstraction>(_ abstraction: Abstraction.Type) {}
+```
+---
+
+#### Injector.clear
+
+To remove all the registered abstractions and implementations
+
+```swift
+func clear() {}
+```
+---
+
+#### Injector.turnOffLogger
+
+To turn off all the information messages logged by the injector ( It don't affect the error messages )
+
+```swift
+func turnOffLogger() {}
+```
+---
+
+#### Injector.turnOnLogger
+
+To turn on all the information messages logged by the injector ( It Don't affect the error messages )
+
+```swift
+func turnOnLogger() {}
+```
+---
