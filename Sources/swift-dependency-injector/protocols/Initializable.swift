@@ -7,4 +7,5 @@
 
 import Foundation
 
+/// To constraint a class with a required initializer
 public protocol Initializable { init() }
