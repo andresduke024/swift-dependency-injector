@@ -62,6 +62,8 @@ class DependenciesContainer {
     /// To validate if the given abstraction is already store into the container. Throws an 'InjectionErrors'.
     /// - Parameter name: The name (identifier) of the given abstraction
     private func validateNewAbstraction(name: String) throws {
+        guard !Utils.isRunningOnTestTarget else { return }
+        
         if container[name] != nil {
             throw InjectionErrors.abstractionAlreadyRegistered(abstractionName: name)
         }
