@@ -16,7 +16,7 @@ Once you have your Swift package set up, adding swift-dependency-injector as a d
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMajor(from: "1.0.1"))
 ]
 ```
 
