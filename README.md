@@ -118,6 +118,53 @@ The second thing to note is that the property must be marked as an optional data
 
 And that's all, by this point we can replicate this steps for every dependency we want to make injectable and start to using them all around in our project.
 
+### Tests
+
+We can easily mock our injected dependencies to make tests more efficient and reliable.
+
+
+```swift
+class RepositoryMock: Repository, InjectableDependency {
+    required init() {}
+
+    func fetch() -> [Int] { [1,2,3,4] }
+}
+```
+
+The only thing we have to do now is register the mock dependency in our test file.
+
+```swift
+final class ServiceTest: XCTestCase {
+    private var sut: Service!
+    
+    override func setUp() {
+        Injector.register(Repository.self, implementation: RepositoryMock.instance)
+        sut = DummyService()
+    }
+    
+    override func tearDown() {
+        Injector.clear()
+        sut = nil
+    }
+    
+    func testFetchDataSuccess() throws {
+        let expected = [1,2,3,4]
+        
+        RepositoryMock.shouldSucced = true
+        let result = sut.getData()
+        
+        XCTAssertEqual(result, expected)
+    }
+}
+```
+
+---
+**NOTE**
+
+Demo project. See the [demo](/Sources/swift-dependency-injector/demo) folder inside the repository's files for a more complex example.
+
+---
+
 ## Docs
 ## Injector 
 
@@ -216,9 +263,98 @@ func turnOffLogger() {}
 
 #### Injector.turnOnLogger
 
-To turn on all the information messages logged by the injector ( It Don't affect the error messages )
+To turn on all the information messages logged by the injector ( It don't affect the error messages )
 
 ```swift
 func turnOnLogger() {}
 ```
+---
+
+## @Injectable
+
+The property wrapper used to mark a property as an injectable dependency.
+It use a generic value to define the abstraction that encapsulates the injected implemententations.
+
+All the dependencies injected by using this property wrapper has two different ways of be instantiate.
+
+- **regular**: 
+    - Every injection is going to create a new instance of the given implementation.
+- **singleton**: 
+    - Every injection is going to get an already stored instance of the given implementation.
+    - When is the first injection, its going to create, store and return a new instance of the given implementation.
+    
+**regular** is the default injection type, what it means that it doesn't need to be specified when we use the wrapper.
+
+To use **regular** injection type:
+
+```swift
+@Injectable private var repository: Repository?
+```
+or
+
+```swift
+@Injectable(.regular) private var repository: Repository?
+```
+
+And to use **singleton** injection type:
+
+```swift
+@Injectable(.singleton) private var repository: Repository?
+```
+
+#### Wrapped value
+
+When we use the wrapped value of the property wrapper we are going to obtain the implementation injected in the base class when it was initialized.
+
+This means that this value it's going to be instantiate once per class, unless it was injected as a singleton, and we always going to obtain the same object.
+
+This is the regular implementation and its the mostly used.
+
+```swift
+func getData() -> [Int] {
+    repository?.fetch() ?? []
+}
+```
+
+#### Projected value
+
+When we use the projected value of the property wrapper we are going to obtain a new implementation every time we try to obtain the value of the dependency.
+
+This means that this value it's going to be instantiate once per call and we always going to obtain a new object.
+
+To achieve this we only have to use the '**$**' sign in every call.
+
+
+```swift
+func getData() -> [Int] {
+    $repository?.fetch() ?? []
+}
+```
+
+This feature can be useful when we want to change the implementation of a dependency in real time.
+
+Imagine that we have a NetworkManager which listen to changes on internet connection. We want to use a local repository if the connection is failing and a remote repository if the connection is working successfully.
+
+To achieve that we can use the Injector class to change the default implementation of **Repository** dependency every time the connection changes.
+
+```swift
+class DummyNetworkManager {
+    func validateConnection() {
+        let isNetworkAvailable = Bool.random()
+        
+        let repositoryImplementation: RepositoryType = isNetworkAvailable ? .remote : .local
+        Injector.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
+    }
+}
+```
+
+When the default dependencies key changes all the injectable properties that are using the projected value are going to start using the new implementation.
+
+And we can do this all the times we want and the implementations are going to change immediately.
+
+---
+**NOTES**
+
+- It is important to note that when we update the default value of a key for a specific dependency, it has to match one of the keys we registered when saving the dependencies in the container.
+- This works for singleton dependencies too. We change the injected value but in this case is not going to be a new instance but a previous stored singleton instance of the new defined implementation.
 ---
