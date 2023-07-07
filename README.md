@@ -358,3 +358,7 @@ And we can do this all the times we want and the implementations are going to ch
 - It is important to note that when we update the default value of a key for a specific dependency, it has to match one of the keys we registered when saving the dependencies in the container.
 - This works for singleton dependencies too. We change the injected value but in this case is not going to be a new instance but a previous stored singleton instance of the new defined implementation.
 ---
+
+## License
+
+MIT license. See the [LICENSE file](LICENSE) for details.
