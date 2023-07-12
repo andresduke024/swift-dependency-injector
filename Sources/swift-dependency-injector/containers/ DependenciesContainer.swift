@@ -24,9 +24,10 @@ class DependenciesContainer {
     ///   - abstraction: Generic type. The protocol to register as dependency
     ///   - defaultDependency: The key to identify the implementation that is going to be injected
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
-    func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> AnyObject?]) {
+    func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {
         validate(abstraction: abstraction) { abstractionName in
-            saveDependencies(abstractionName: abstractionName, key: defaultDependency, implementations: implementations)
+            let mappedImplementations = implementations.mapValues { initializer in { initializer() as? AnyObject } }
+            saveDependencies(abstractionName: abstractionName, key: defaultDependency, implementations: mappedImplementations)
         }
     }
     
@@ -34,10 +35,10 @@ class DependenciesContainer {
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
-    func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> AnyObject?) {
+    func register<Abstraction>(_ abstraction: Abstraction.Type, implementation initializer: @escaping () -> Abstraction?) {
         validate(abstraction: abstraction) { abstractionName in
             let id = UUID().uuidString
-            let implementations = [id : implementation]
+            let implementations = [id : { initializer() as? AnyObject }]
 
             saveDependencies(abstractionName: abstractionName, key: id, implementations: implementations)
         }

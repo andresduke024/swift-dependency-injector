@@ -12,8 +12,8 @@ struct Logger {
     static var informationLogsAreActive: Bool = true
     
     /// Some prefixes to identifies the package's logs into the console
-    private static let errorPrefix = ":::::: DEPENDENCY INJECTOR ERROR\n"
-    private static let regularPrefix = ":::::: DEPENDENCY INJECTOR\n"
+    private static let errorPrefix = ":::::: DEPENDENCY INJECTOR ERROR ->"
+    private static let regularPrefix = ":::::: DEPENDENCY INJECTOR ->"
     
     /// To cast and print an error message into console
     /// - Parameter error: Some kind of 'Error'. Mostly of type InjectionErrors

@@ -184,7 +184,7 @@ To register into the dependencies container a new abstraction and its correspond
 - **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> AnyObject?]) {}
+func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {}
 ```
 ---
 
@@ -198,7 +198,7 @@ To register into the dependencies container a new abstraction and its correspond
 - **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> AnyObject?) {}
+func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> Abstraction?) {}
 ```
 ---
 
