@@ -25,63 +25,146 @@ class DependenciesContainer {
     ///   - defaultDependency: The key to identify the implementation that is going to be injected
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
     func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {
-        validate(abstraction: abstraction) { abstractionName in
-            let mappedImplementations = implementations.mapValues { initializer in { initializer() as? AnyObject } }
-            saveDependencies(abstractionName: abstractionName, key: defaultDependency, implementations: mappedImplementations)
+        createRegistrationContext(abstraction: abstraction, initialRegistrationType: .create) { abstractionName, registrationType in
+            let mappedImplementations = InitializersContainerMapper.map(implementations)
+            saveDependencies(abstractionName: abstractionName, key: defaultDependency, implementations: mappedImplementations, registrationType)
         }
     }
     
     /// To register into the container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction)
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - key: The key to identify the implementation that is going to be injected
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
-    func register<Abstraction>(_ abstraction: Abstraction.Type, implementation initializer: @escaping () -> Abstraction?) {
-        validate(abstraction: abstraction) { abstractionName in
-            let id = UUID().uuidString
-            let implementations = [id : { initializer() as? AnyObject }]
-
-            saveDependencies(abstractionName: abstractionName, key: id, implementations: implementations)
+    func register<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
+        createRegistrationContext(abstraction: abstraction, initialRegistrationType: .create) { abstractionName, registrationType in
+            let implementations = InitializersContainerMapper.map(key, initializer)
+            saveDependencies(abstractionName: abstractionName, key: key, implementations: implementations, registrationType)
         }
     }
     
-    /// To validate a new abstraction by checking if exists and handle possible throwed errors
+    /// To add into the container a new set of implementations of an already registered abstraction
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency
-    ///   - completion: A closure that handle the next steps of the register process. It use the abstraction name as parameter
-    private func validate<Abstraction>(abstraction: Abstraction.Type, completion: (_ abstractionName: String) -> ()) {
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {
+        createRegistrationContext(abstraction: abstraction, initialRegistrationType: .update) { abstractionName, registrationType in
+            let mappedImplementations = InitializersContainerMapper.map(implementations)
+            saveDependencies(abstractionName: abstractionName, implementations: mappedImplementations, registrationType)
+        }
+    }
+    
+    /// To add into the container a new implementation of an already registered abstraction
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - key: The key to identify the implementation that is going to be injected
+    ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
+        createRegistrationContext(abstraction: abstraction, initialRegistrationType: .update) { abstractionName, registrationType in
+            let implementations = InitializersContainerMapper.map(key, initializer)
+            saveDependencies(abstractionName: abstractionName, implementations: implementations, registrationType)
+        }
+    }
+    
+    /// To obtain the abstraction name and the registration type that it's going to be used to store it into the container
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - initialRegistrationType: The original registration type. Depends it the user is trying to update or register abstrabtions
+    ///   - completion: A closure that provides the abstraction name as String and the registration type
+    private func createRegistrationContext<Abstraction>(abstraction: Abstraction.Type, initialRegistrationType: RegistrationType, completion: (_ abstractionName: String, _ registrationType: RegistrationType) -> ()) {
         let abstractionName = String(describing: abstraction.self)
+
+        guard !Utils.isRunningOnTestTarget else {
+            completion(abstractionName, .updateOrCreate)
+            return
+        }
+
+        if initialRegistrationType == .update {
+            completion(abstractionName, .update)
+            return
+        }
+        
+        guard initialRegistrationType == .create else {
+            Logger.log(InjectionErrors.undefinedRegistrationType(abstrationName: abstractionName))
+            return
+        }
         
         do {
             try validateNewAbstraction(name: abstractionName)
-            completion(abstractionName)
+            completion(abstractionName, .create)
         } catch (let error){
             Logger.log(error)
         }
     }
     
-    
     /// To validate if the given abstraction is already store into the container. Throws an 'InjectionErrors'.
     /// - Parameter name: The name (identifier) of the given abstraction
     private func validateNewAbstraction(name: String) throws {
-        guard !Utils.isRunningOnTestTarget else { return }
-        
         if container[name] != nil {
             throw InjectionErrors.abstractionAlreadyRegistered(abstractionName: name)
         }
     }
+    
+    /// To handle the registration of the new dependencies based on the provided registration type.
+    /// - Parameters:
+    ///   - abstractionName: The name (identifier) of the given abstraction
+    ///   - key: The key that identifies the implementation that is going to be injected by default
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    ///   - registrationType: An enum value to know the kind of registration to perform
+    private func saveDependencies(abstractionName: String, key: String = "", implementations: InitializersContainer, _ registrationType: RegistrationType) {
+        switch registrationType {
+        case .create:
+            create(abstractionName: abstractionName, key: key, implementations: implementations)
+        case .update:
+            update(abstractionName: abstractionName, implementations: implementations)
+        case .updateOrCreate:
+            updateOrCreate(abstractionName: abstractionName, key: key, implementations: implementations)
+        }
+    }
+    
+    
+    /// To update an already stored abstraction and its new corresponding implementations into the container.
+    /// - Parameters:
+    ///   - abstractionName: The name (identifier) of the given abstraction
+    ///   - key: The key that identifies the implementation that is going to be injected by default
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    private func update(abstractionName: String, implementations: InitializersContainer) {
+        guard let implementationsContainer = container[abstractionName] else {
+            Logger.log(InjectionErrors.abstractionNotFoundForUpdate(abstractionName: abstractionName))
+            return
+        }
+        
+        let newImplementationsContainer = implementationsContainer.copyWith(implementations: implementations)
+        container[abstractionName] = newImplementationsContainer
+        Logger.log("'\(abstractionName)' abstraction updated succesfully with \(implementations.count) injectable implementations. \(newImplementationsContainer.count) Implementations registered in total")
+    }
+    
     
     /// To store an abstraction and its corresponding implementations into the container.
     /// - Parameters:
     ///   - abstractionName: The name (identifier) of the given abstraction
     ///   - key: The key that identifies the implementation that is going to be injected by default
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
-    private func saveDependencies(abstractionName: String, key: String, implementations: [String: () -> AnyObject?]) {
+    private func create(abstractionName: String, key: String, implementations: InitializersContainer) {
         let implementationsContainer = ImplementationsContainer(currentKey: key, implementations: implementations)
         container[abstractionName] = implementationsContainer
         
         Logger.log("'\(abstractionName)' abstraction registered succesfully with \(implementations.count) injectable implementations")
     }
-    
+        
+    /// To store or update an abstraction and its corresponding implementations into the container (Useful when application runs on Tests Target).
+    /// - Parameters:
+    ///   - abstractionName: The name (identifier) of the given abstraction
+    ///   - key: The key that identifies the implementation that is going to be injected by default
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    private func updateOrCreate(abstractionName: String, key: String, implementations: InitializersContainer) {
+        if container[abstractionName] == nil {
+            create(abstractionName: abstractionName, key: key, implementations: implementations)
+            return
+        }
+        
+        update(abstractionName: abstractionName, implementations: implementations)
+    }
     /// To change the default implementation injected for a given abstraction by changing the key used in the container
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to change the injected implementation

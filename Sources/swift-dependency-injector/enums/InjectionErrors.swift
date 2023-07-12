@@ -20,6 +20,11 @@ enum InjectionErrors: Error {
     /// When no registered abstraction was founded in the container with the given type
     case notAbstrationFound(abstractionName: String)
     
+    /// When an abstraction that is supposed to was stored into the container couldn't be found to update its values.
+    case abstractionNotFoundForUpdate(abstractionName: String)
+    
+    case undefinedRegistrationType(abstrationName: String) 
+    
     /// A computed property to obtain a specific error message based on the current case
     var message: String {
         switch self {
@@ -29,6 +34,10 @@ enum InjectionErrors: Error {
             return "Something happened when trying to cast '\(abstractionName)'. Please make sure of register dependencies that successfully implement the '\(abstractionName)' protocol and make sure to add a valid dependency key"
         case .notAbstrationFound(let abstractionName):
             return "No registered abstraction found with the identifier '\(abstractionName)'"
+        case .abstractionNotFoundForUpdate(let abstractionName):
+            return "'\(abstractionName)' couldn't be found to update its values. Please make sure of register the abstraction into the container before trying to update its implementations"
+        case .undefinedRegistrationType(let abstractionName):
+            return "'\(abstractionName)' abstraction couldn't be registered (Undefined registration type)"
         }
     }
 }

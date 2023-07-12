@@ -16,7 +16,7 @@ Once you have your Swift package set up, adding swift-dependency-injector as a d
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMajor(from: "1.0.1"))
+    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "1.0.2"))
 ]
 ```
 
@@ -195,12 +195,44 @@ To register into the dependencies container a new abstraction and its correspond
 **Parameters**:
 
 - **abstraction**: Generic type. The protocol to register as dependency
+- **key**: The key to identify the implementation that is going to be injected. Can be omitted if you're sure this is the only implementations for the given abstraction
 - **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> Abstraction?) {}
+func register<Abstraction>(_ abstraction: Abstraction.Type, key: String = "", implementation: @escaping () -> Abstraction?) {}
 ```
 ---
+
+
+#### Injector.add
+
+To add into the container a new set of implementations of an already registered abstraction.
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol to register as dependency
+- **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+
+```swift
+func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {}
+```
+---
+
+#### Injector.add
+
+To add into the container a new implementation of an already registered abstraction
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol to register as dependency
+- **key**: The key to identify the implementation that is going to be injected
+- **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+
+```swift
+func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation: @escaping () -> Abstraction?) {}
+```
+---
+
 
 #### Injector.updateDependencyKey
 

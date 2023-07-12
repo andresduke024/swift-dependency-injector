@@ -22,9 +22,27 @@ public struct Injector {
     /// To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction)
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - key: The key to identify the implementation that is going to be injected. Can be omitted if you're sure this is the only implementations for the given abstraction
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
-    public static func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> Abstraction?) {
-        DependenciesContainer.shared.register(abstraction, implementation: implementation)
+    public static func register<Abstraction>(_ abstraction: Abstraction.Type, key: String = "", implementation: @escaping () -> Abstraction?) {
+        DependenciesContainer.shared.register(abstraction, key: key, implementation: implementation)
+    }
+    
+    /// To add into the container a new set of implementations of an already registered abstraction
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    public static func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {
+        DependenciesContainer.shared.add(abstraction, implementations: implementations)
+    }
+    
+    /// To add into the container a new implementation of an already registered abstraction
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency
+    ///   - key: The key to identify the implementation that is going to be injected
+    ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+    public static func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation: @escaping () -> Abstraction?) {
+        DependenciesContainer.shared.add(abstraction, key: key, implementation: implementation)
     }
     
     /// To change the default implementation injected for a given abstraction by changing the key used in the container

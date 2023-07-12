@@ -17,5 +17,7 @@ class ApplicationSetup {
         Injector.register(NetworkManager.self, implementation: DummyNetworkManager.instance)
         
         Injector.register(Service.self, implementation: DummyService.instance)
+        
+        Injector.add(Repository.self, key: RepositoryType.dummy.rawValue, implementation: DummyRepository.instance)
     }
 }

@@ -13,22 +13,22 @@ final class ViewModelWithoutInjectionTest: XCTestCase {
     
     override func setUp() {
         Injector.turnOffLogger()
+        Injector.remove(Service.self)
+        Injector.resetSingleton(of: NetworkManager.self)
+        Injector.clear()
         sut = ViewModel()
     }
-    
+
     override func tearDown() {
-        Injector.remove(Service.self)
-        Injector.resetSingleton(of: NetworkManagerMock.self)
-        Injector.clear()
         Injector.turnOnLogger()
         sut = nil
     }
-    
+
     func testGetData() throws {
         let expected = [Int]()
-        
+
         sut.loadData()
-        
+
         XCTAssertEqual(sut.data, expected)
     }
 }

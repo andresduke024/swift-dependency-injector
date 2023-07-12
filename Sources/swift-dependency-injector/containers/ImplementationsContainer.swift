@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias InitializersContainer = [String: () -> AnyObject?]
+
 /// This class is used to store the a set of implementation of a given type and exposed the methods to access to them
 class ImplementationsContainer {
     
@@ -14,18 +16,29 @@ class ImplementationsContainer {
     private var currentKey: String
     
     /// To store the builder of each implementation
-    private let implementations: [String: () -> AnyObject?]
+    private let implementations: InitializersContainer
     
     /// To store the implementations that were requested to inject as singletons
-    private var singleton: [String: AnyObject?] = [:]
+    private var singletons: [String: AnyObject?] = [:]
     
-    init(currentKey: String, implementations: [String : () -> AnyObject?]) {
+    /// To get the current amount of stored implementations
+    var count: Int { implementations.count }
+    
+    init(currentKey: String, implementations: InitializersContainer) {
         self.currentKey = currentKey
         self.implementations = implementations
     }
     
-    /// To get an instance of specific implementation base on the stored current key
-    /// - Parameter injectionType: An enum that defines if the instance of the implementation is going to be a new instance or an already created and stored instance
+    private init(currentKey: String, implementations: InitializersContainer, singletonsContainer: [String: AnyObject?]) {
+        self.currentKey = currentKey
+        self.implementations = implementations
+        self.singletons = singletonsContainer
+    }
+    
+    
+    /// To get an instance of specific implementation base on the stored current key.
+    /// - Parameter injectionType: An enum that defines if the instance of the implementation is going to be a new instance or an already created and stored instance.
+    /// - Returns: An instance of the specific implementation
     func get(with injectionType: InjectionType) -> AnyObject? {
         let implementation = implementations[currentKey]?()
         
@@ -33,11 +46,11 @@ class ImplementationsContainer {
             return implementation
         }
         
-        if let singletonImpl = singleton[currentKey] {
+        if let singletonImpl = singletons[currentKey] {
             return singletonImpl
         }
         
-        singleton[currentKey] = implementation
+        singletons[currentKey] = implementation
         return implementation
     }
     
@@ -51,10 +64,27 @@ class ImplementationsContainer {
     /// - Parameter key: A key to identify the the instance that is going to be removed
     func removeSingleton(key: String?) {
         if let key {
-            singleton.removeValue(forKey: key)
+            singletons.removeValue(forKey: key)
             return
         }
         
-        singleton.removeAll()
+        singletons.removeAll()
+    }
+    
+    
+    /// To build a copy of the current instance by adding new values to its attributes.
+    /// - Parameters:
+    ///   - currentKey: The key to identify the default implementation to be injected. If is nil is going to use the already saved key.
+    ///   - implementations: The implementations to add/replace into the already stored container.
+    /// - Returns: A new instances of itself.
+    func copyWith(currentKey: String? = nil, implementations: InitializersContainer) -> ImplementationsContainer {
+        var newContainer = self.implementations
+        implementations.forEach { newContainer[$0] = $1 }
+        
+        return ImplementationsContainer(
+            currentKey: currentKey ?? self.currentKey,
+            implementations: newContainer,
+            singletonsContainer: self.singletons
+        )
     }
 }
