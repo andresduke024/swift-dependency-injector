@@ -7,15 +7,15 @@
 
 import Foundation
 
-/// Defines the way to register dependencies into the container
+/// Defines the way to register dependencies into the container.
 enum RegistrationType {
     
-    /// To add a new value into the container
+    /// To add a new value into the container.
     case create
     
-    /// To update an already stored value into the container
+    /// To update an already stored value into the container.
     case update
     
-    /// To add or update a value into the container
+    /// To add or update a value into the container.
     case updateOrCreate
 }

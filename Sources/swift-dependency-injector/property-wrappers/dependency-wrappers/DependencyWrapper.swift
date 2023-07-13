@@ -8,38 +8,41 @@
 import Foundation
 import Combine
 
-open class DependencyWrapper<Value> {
+/// Base class used to encapsulate the common behavior of a dependency wrapper.
+/// **It should not be instantiate**
+open class DependencyWrapper<Abstraction> {
+    
+    /// The name of the file where the wrapped implementation is being used.
     let filePath: String
+    
+    /// The specific line of the file where the wrapped implementation is being used.
     let line: Int
     
-    var value: Value?
+    /// To store the current injected implementation.
+    var value: Abstraction?
     
-    let id = UUID()
-    
-    var abstractionName: String {
-        String(describing: Value.self)
-    }
-    
-    init(
-        _ filePath: String,
-        _ line: Int
-    ) {
+    init(_ filePath: String, _ line: Int) {
         self.filePath = filePath
         self.line = line
         
         manageOnInitInstantiation()
     }
     
+    /// To manage and define the way and the moment at the implementation has to be instantiated.
+    /// **Must override**
     open func manageOnInitInstantiation() { }
     
-    open func unwrapValue() -> Value? { return nil }
+    /// A facade function  used to perform all the validations and processes required before obtain an injected implementation.
+    /// **Must override**
+    /// - Returns: An optional implementation of the given abstraction.
+    open func unwrapValue() -> Abstraction? { nil }
     
     /// To validate if an injection was completed successfully
-    /// - Parameter dependency: the obtained implementation of the given abstraction (Value)
     final func checkInjectionError() {
         guard value == nil else { return }
         
-        let error: InjectionErrors = .noImplementationFoundOnInjection(abstrationName: abstractionName, file: "\(filePath) \(line)")
+        let abstractionName = Utils.createName(for: Abstraction.self)
+        let error: InjectionErrors = .noImplementationFoundOnInjection(abstractionName, file: "\(filePath) \(line)")
         Logger.log(error)
     }
 }

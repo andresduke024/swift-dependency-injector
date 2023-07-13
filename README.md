@@ -286,16 +286,20 @@ func clear() {}
 
 #### Injector.turnOffLogger
 
-To turn off all the information messages logged by the injector ( It don't affect the error messages )
+To turn off the messages logged by the injector.
+
+**Parameters**:
+
+- **forced**: To know if error messages will be disabled too. False by default.
 
 ```swift
-func turnOffLogger() {}
+func func turnOffLogger(forced: Bool = false) {}
 ```
 ---
 
 #### Injector.turnOnLogger
 
-To turn on all the information messages logged by the injector ( It don't affect the error messages )
+To turn on all the information and error messages logged by the injector.
 
 ```swift
 func turnOnLogger() {}

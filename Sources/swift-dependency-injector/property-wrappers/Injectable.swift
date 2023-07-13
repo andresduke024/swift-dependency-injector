@@ -7,23 +7,23 @@
 
 import Foundation
 
-/// The property wrapper used to mark a property as an injectable dependency
-/// Generic value: <Value> used to define the abstraction that encapsulates the injected implemententations
+/// The property wrapper used to mark a property as an injectable dependency.
+/// Generic value: <Abstraction> used to define the abstraction that encapsulates the injected implemententations.
 @propertyWrapper
-public struct Injectable<Value> {
+public struct Injectable<Abstraction> {
 
-    /// The specific implementation obtained from the container.
-    /// This property will be used when the wrapped value will requested
-    private let dependency: DependencyWrapper<Value>
+    /// A wrapper that will manage the whole lyfecycle of the injected implementation.
+    private let dependency: DependencyWrapper<Abstraction>
 
-    /// The value obtained when we access to the property from outside
-    public var wrappedValue: Value? { dependency.unwrapValue() }
+    /// To obtain the specific implementation injected when we access to the property from outside.
+    public var wrappedValue: Abstraction? { dependency.unwrapValue() }
     
-    /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor
+    /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor.
     /// - Parameters:
-    ///   - injectionType: The injection type used to obtain the dependency
-    ///   - file: The name of the file where this property it's being used. It should not be defined outside, is initialized by default.
-    ///   - line: The specific line of the file where this property it's being used. It should not be defined outside, is initialized by default.
+    ///   - injectionType: To define the injection type used to instantiate the dependency.
+    ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
+    ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
+    ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
     public init(
         injection injectionType: InjectionType = .regular,
         instantiation instantiationType: InstantiationType = .lazy,
@@ -31,29 +31,5 @@ public struct Injectable<Value> {
         _ line: Int = #line
     ) {
         self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line)
-    }
-}
-
-/// The property wrapper used to mark a property as an injectable dependency
-/// Generic value: <Value> used to define the abstraction that encapsulates the injected implemententations
-@propertyWrapper
-public struct ObservedInjectable<Value> {
-
-    /// The specific implementation obtained from the container.
-    /// This property will be used when the wrapped value will requested
-    private let dependency: DependencyWrapper<Value>
-
-    /// The value obtained when we access to the property from outside
-    public var wrappedValue: Value? { dependency.unwrapValue() }
-    
-    /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor
-    /// - Parameters:
-    ///   - file: The name of the file where this property it's being used. It should not be defined outside, is initialized by default.
-    ///   - line: The specific line of the file where this property it's being used. It should not be defined outside, is initialized by default.
-    public init(
-        _ file: String = #file,
-        _ line: Int = #line
-    ) {
-        self.dependency = ObservedDependencyWrapper(file, line)
     }
 }
