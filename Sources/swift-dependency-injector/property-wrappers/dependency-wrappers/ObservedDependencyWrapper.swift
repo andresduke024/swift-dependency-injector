@@ -95,8 +95,8 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// To set a new implementation an log the changes.
     /// - Parameter value: The new implementation value.
     private func setNewImplementation(_ value: Abstraction?) {
-        let isNilValue = value == nil ? "not" : ""
-        Logger.log("New implementation of '\(Utils.createName(for: Abstraction.self))' with a \(isNilValue) nil value received on subscriber: \(id)")
+        let isNilValue = value != nil ? "not " : ""
+        Logger.log("New implementation of '\(Utils.createName(for: Abstraction.self))' with a \(isNilValue)nil value received on subscriber: \(id)")
         self.value = value
     }
 }

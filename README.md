@@ -450,6 +450,9 @@ This means that all properties wrapped with **@ObservedInjectable** will be crea
 - **NoImplementationFoundForPublish**: 
     - When in the attempt to publish a new implementation of a given abstraction based on the current dependency key no implementation could be found into the implementations container.
 
+- **EqualDependecyKeyOnUpdate**:
+    - When in the attempt to update the default dependency key of a specific abstraction the key thats already stored is equal to the new key.
+
 ## Injection types
 
 Defines how all the implementations that will be injected are going to be created and returned.

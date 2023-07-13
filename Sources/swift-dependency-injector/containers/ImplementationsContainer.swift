@@ -66,6 +66,11 @@ final class ImplementationsContainer {
     /// To set the new key that will be used to identify the specific implementation obtained with the 'get' method.
     /// - Parameter newKey: A key to identify a specific implementation.
     func setCurrentKey(_ newKey: String) {
+        guard currentKey != newKey else {
+            Logger.log(.equalDependecyKeyOnUpdate(abstractionName, newKey))
+            return
+        }
+        
         self.currentKey = newKey
         Logger.log("The key '\(newKey)' was saved successfully for the new injections of '\(abstractionName)'")
         publishImplementation()
