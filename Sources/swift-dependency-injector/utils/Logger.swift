@@ -13,14 +13,15 @@ struct Logger {
     static var isActive: Bool = true
     
     /// Some prefixes to identifies the package's logs into the console.
-    private static let errorPrefix = "::: DEPENDENCY INJECTOR ERROR ->"
+    private static let errorPrefix = "::: DEPENDENCY INJECTOR ERROR:"
     private static let regularPrefix = "::: DEPENDENCY INJECTOR ->"
     
     /// To print an InjectionErrors into console
     /// - Parameter error: Some InjectionError
     static func log(_ error: InjectionErrors) {
         guard isActive else { return }
-        print(errorPrefix, error.message)
+        let errorName = "\(error.name) ->"
+        print(errorPrefix, errorName, error.message)
     }
     
     /// To cast and print an error message into console.

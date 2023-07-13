@@ -56,4 +56,26 @@ enum InjectionErrors: Error {
             return "No registered implementation found for '\(abstractionName)' abstraction. Publish could not be completed"
         }
     }
+    
+    /// A computed property to obtain an error name description
+    var name: String {
+        switch self {
+        case .abstractionAlreadyRegistered:
+            return "AbstractionAlreadyRegistered"
+        case .implementationsCouldNotBeCasted:
+            return "ImplementationsCouldNotBeCasted"
+        case .notAbstrationFound:
+            return "NotAbstrationFound"
+        case .abstractionNotFoundForUpdate:
+            return "AbstractionNotFoundForUpdate"
+        case .undefinedRegistrationType:
+            return "UndefinedRegistrationType"
+        case .noImplementationFoundOnInjection:
+            return "NoImplementationFoundOnInjection"
+        case .noPublisherFounded:
+            return "NoPublisherFounded"
+        case .noImplementationFoundForPublish:
+            return "NoImplementationFoundForPublish"
+        }
+    }
 }

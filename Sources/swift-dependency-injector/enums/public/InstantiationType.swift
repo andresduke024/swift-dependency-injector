@@ -13,6 +13,6 @@ public enum InstantiationType {
     /// The implementation will be instantiate at the creation of the property wrapper.
     case regular
     
-    /// The implementation will not be instantiate until it's required for the first time.go.
+    /// The implementation will not be instantiate until it's required for the first time.
     case lazy
 }
