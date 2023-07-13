@@ -21,12 +21,7 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
         self.id = String.join(Utils.extractFileName(of: filePath, withExtension: false), Utils.createName(for: Abstraction.self), UUID().uuidString, separator: ":")
         super.init(filePath, line)
         subscribeToDependencyPublisher()
-    }
-    
-    /// **Override** To manage and define the way and the moment at the implementation has to be instantiated.
-    /// It will request a injection of the given abstraction but only for this wrapper.
-    override func manageOnInitInstantiation() {
-        DependenciesContainer.shared.requestPublisherUpdate(of: Abstraction.self, subscriber: id)
+        manageOnInitInstantiation()
     }
     
     /// **Override** A facade function used to perform all the validations and processes required before obtain an injected implementation.
@@ -39,6 +34,12 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
         
         checkInjectionError()
         return value
+    }
+    
+    /// To manage and define the way and the moment at the implementation has to be instantiated.
+    /// It will request a injection of the given abstraction but only for this wrapper.
+    private func manageOnInitInstantiation() {
+        DependenciesContainer.shared.requestPublisherUpdate(of: Abstraction.self, subscriber: id)
     }
     
     /// It obtains and subscribes to a publisher of the given abstraction.
@@ -85,9 +86,17 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// - Parameter wrapper: A wrapper that contains the new implementation and an optional id to identify the specific subscriber to which the event was sent.
     private func onNewImplementationReceived(_ wrapper: PublishedValueWrapper<Abstraction>) {
         if wrapper.id == nil {
-            value = wrapper.value
+            setNewImplementation(wrapper.value)
         } else if let id = wrapper.id, id == self.id {
-            value = wrapper.value
+            setNewImplementation(wrapper.value)
         }
+    }
+    
+    /// To set a new implementation an log the changes.
+    /// - Parameter value: The new implementation value.
+    private func setNewImplementation(_ value: Abstraction?) {
+        let isNilValue = value == nil ? "not" : ""
+        Logger.log("New implementation of '\(Utils.createName(for: Abstraction.self))' with a \(isNilValue) nil value received on subscriber: \(id)")
+        self.value = value
     }
 }

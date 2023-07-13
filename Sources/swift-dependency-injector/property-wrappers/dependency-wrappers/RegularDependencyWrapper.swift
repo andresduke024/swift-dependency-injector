@@ -20,11 +20,12 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
         self.injectionType = injectionType
         self.instantiationType = instantiationType
         super.init(filePath, line)
+        manageOnInitInstantiation()
     }
     
-    /// **Override** To manage and define the way and the moment at the implementation has to be instantiated.
+    /// To manage and define the way and the moment at the implementation has to be instantiated.
     /// Defines if a new implementation has to be stored in the 'value' property at the initialization of the this class or later.
-    override func manageOnInitInstantiation() {
+    private func manageOnInitInstantiation() {
         if instantiationType == .lazy {
             let file = Utils.extractFileName(of: filePath, withExtension: true)
             let abstractionName = Utils.createName(for: Abstraction.self)
