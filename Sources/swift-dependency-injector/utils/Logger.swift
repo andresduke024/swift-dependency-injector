@@ -29,11 +29,8 @@ struct Logger {
     /// To print a message into console
     /// - Parameters:
     ///   - message: The message that is going to be printed
-    ///   - addErrorPrefix: To know if the header of the message is going to use the "error" suffix
-    static func log(_ message: String, addErrorPrefix: Bool = false) {
-        guard informationLogsAreActive || addErrorPrefix else { return }
-        
-        let prefix = addErrorPrefix ? errorPrefix : regularPrefix
-        print(prefix, message)
+    static func log(_ message: String) {
+        guard informationLogsAreActive else { return }
+        print(regularPrefix, message)
     }
 }

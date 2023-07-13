@@ -23,7 +23,11 @@ enum InjectionErrors: Error {
     /// When an abstraction that is supposed to was stored into the container couldn't be found to update its values.
     case abstractionNotFoundForUpdate(abstractionName: String)
     
-    case undefinedRegistrationType(abstrationName: String) 
+    case undefinedRegistrationType(abstrationName: String)
+    
+    case noImplementationFoundOnInjection(abstrationName: String, file: String)
+    
+    case noPublisherFounded(abstractionName: String)
     
     /// A computed property to obtain a specific error message based on the current case
     var message: String {
@@ -38,6 +42,10 @@ enum InjectionErrors: Error {
             return "'\(abstractionName)' couldn't be found to update its values. Please make sure of register the abstraction into the container before trying to update its implementations"
         case .undefinedRegistrationType(let abstractionName):
             return "'\(abstractionName)' abstraction couldn't be registered (Undefined registration type)"
+        case .noImplementationFoundOnInjection(let abstractionName, let file):
+            return "Not implementation found for '\(abstractionName)' injection. File: \(file)"
+        case .noPublisherFounded(let abstractionName):
+            return "Unable to create a reactive publisher for '\(abstractionName)' abstraction. Trying to inject a default implementation"
         }
     }
 }

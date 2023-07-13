@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 typealias InitializersContainer = [String: () -> AnyObject?]
 
 /// This class is used to store the a set of implementation of a given type and exposed the methods to access to them
-class ImplementationsContainer {
+final class ImplementationsContainer {
     
     /// The key that identifies the implementation that is going to be injected in every injection attempt
     private var currentKey: String
@@ -20,19 +21,23 @@ class ImplementationsContainer {
     
     /// To store the implementations that were requested to inject as singletons
     private var singletons: [String: AnyObject?] = [:]
-    
+
     /// To get the current amount of stored implementations
     var count: Int { implementations.count }
+    
+    internal let publisher = PassthroughSubject<ImplementationWrapper, InjectionErrors>()
     
     init(currentKey: String, implementations: InitializersContainer) {
         self.currentKey = currentKey
         self.implementations = implementations
+        publishImplementation()
     }
     
     private init(currentKey: String, implementations: InitializersContainer, singletonsContainer: [String: AnyObject?]) {
         self.currentKey = currentKey
         self.implementations = implementations
         self.singletons = singletonsContainer
+        publishImplementation()
     }
     
     
@@ -53,11 +58,22 @@ class ImplementationsContainer {
         singletons[currentKey] = implementation
         return implementation
     }
-    
+
     /// To set the new key that is going to be used to identify the specific implementation obtained with the 'get' method
     /// - Parameter newKey: A key to identify a specific implementation
     func setCurrentKey(_ newKey: String) {
         self.currentKey = newKey
+        publishImplementation()
+    }
+    
+    func publishImplementation(_ observerId: UUID? = nil) {
+        guard let implementation = get(with: .regular) else {
+            // TODO: Publish an error and log
+            return
+        }
+        
+        let implementationSubject = ImplementationWrapper(observerId: observerId, value: implementation)
+        publisher.send(implementationSubject)
     }
     
     /// To remove an already created an stored instance from the singletons dictionary.

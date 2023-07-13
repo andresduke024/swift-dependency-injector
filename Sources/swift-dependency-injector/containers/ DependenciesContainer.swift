@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import Combine
 
 /// This class manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations
-class DependenciesContainer {
+final class DependenciesContainer {
     
     /// A singleton instance of the class
     static let shared = DependenciesContainer()
@@ -207,12 +208,22 @@ class DependenciesContainer {
         let abstractionName = String(describing: Abstraction.self)
         guard let implementations = container[abstractionName] else { return nil }
         
-        guard let implementation = implementations.get(with: injectionType) as? Abstraction else {
+        guard let implementation: Abstraction = AbstractionMapper.map(implementations.get(with: injectionType)) else {
             Logger.log(InjectionErrors.implementationsCouldNotBeCasted(abstractionName: abstractionName))
             return nil
         }
 
         return implementation
+    }
+    
+    func getPublisher<Abstraction>(of abstraction: Abstraction.Type) -> PassthroughSubject<ImplementationWrapper, InjectionErrors>? {
+        let abstractionName = String(describing: Abstraction.self)
+        return container[abstractionName]?.publisher
+    }
+    
+    func requestPublisherUpdate<Abstraction>(of abstraction: Abstraction.Type, observer: UUID?) {
+        let abstractionName = String(describing: Abstraction.self)
+        container[abstractionName]?.publishImplementation()
     }
     
     /// To remove all the registed implementations of a given abstraction and the abstraction itself
