@@ -12,11 +12,12 @@ protocol Service {
 }
 
 class DummyService: Service, InjectableDependency {
-    @Injectable private var repository: Repository?
+    @ObservedInjectable
+    private var repository: Repository?
     
     required init() {}
     
     func getData() -> [Int] {
-        $repository?.fetch() ?? []
+        repository?.fetch() ?? []
     }
 }

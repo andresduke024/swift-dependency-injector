@@ -18,7 +18,6 @@ final class ViewModelTest: XCTestCase {
     }
     
     override func tearDown() {
-        Injector.clear()
         sut = nil
     }
     

@@ -7,11 +7,31 @@
 
 import Foundation
 
-/// Common utilities
+/// Common utilities.
 struct Utils {
     
-    /// To know if the application which is using the package is running unit tests
+    /// To know if the application which is using the package is running unit tests.
     static var isRunningOnTestTarget: Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+    
+    /// To extract name as string from generic object.
+    /// - Parameter object: Any object.
+    /// - Returns: A representation of object name.
+    static func createName<Object>(for object: Object.Type) -> String {
+        String(describing: Object.self)
+    }
+    
+    /// To extract just the file name from a full path.
+    /// - Parameters:
+    ///   - filePath: The original file path.
+    ///   - withExtension: To define the obtained string will contains the file extension.
+    /// - Returns: A string representing the name of the file.
+    static func extractFileName(of filePath: String, withExtension: Bool) -> String {
+        let fileName = (filePath as NSString).lastPathComponent
+        
+        return withExtension
+            ? fileName
+            : (fileName as NSString).deletingPathExtension
     }
 }

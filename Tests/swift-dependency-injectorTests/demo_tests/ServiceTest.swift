@@ -17,7 +17,6 @@ final class ServiceTest: XCTestCase {
     }
     
     override func tearDown() {
-        Injector.clear()
         sut = nil
     }
     
