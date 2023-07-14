@@ -2,6 +2,11 @@ os: osx
 osx_image: xcode14.2
 language: objective-c
 
+ branches:
+  only:
+    - develop
+    - master
+
 script:
   - swift build
   - swift test --enable-code-coverage
