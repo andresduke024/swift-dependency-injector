@@ -37,6 +37,14 @@ dependencies: [
 ]
 ```
 
+### CocoaPods
+
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate SwiftDependencyInjector into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+```ruby
+pod 'SwiftDependencyInjector'
+```
+
 ## Usage example
 
 First, define a protocol. For this example we are going to use a **Repository** protocol that has the job to fetch some data.
