@@ -4,7 +4,24 @@
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)
 
 
-A native dependency container written in swift that manages the initialization, store, and injection of the dependencies of a given abstraction fast and safety
+A native dependency container written in swift that manages the initialization, store, and injection of the dependencies of a given abstraction fast and safety.
+
+## Index
+
+- Installation
+- Usage example
+- Tests
+- Demo
+- Docs
+    - Injector
+    - @Injectable
+    - @ObservedInjectable
+    - Injection Errors
+    - Injection types
+    - Instantiation types
+- License
+
+---
 
 ## Installation
 
@@ -16,13 +33,13 @@ Once you have your Swift package set up, adding swift-dependency-injector as a d
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMajor(from: "1.0.1"))
+    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "1.2.0"))
 ]
 ```
 
 ## Usage example
 
-First, define a protocol. For this example we are going to use a Repository protocol that has the job to fetch some data.
+First, define a protocol. For this example we are going to use a **Repository** protocol that has the job to fetch some data.
 
 ```swift
 protocol Repository {
@@ -46,9 +63,9 @@ class RemoteRepository: Repository, InjectableDependency {
 }
 ```
 
-Notice that both classes implements the Injectable Dependency protocol too. This protocol defines a default property that give us a contract to access to an instance of the class. We are going to use this property later.
+Notice that both classes implements the Injectable Dependency protocol too. This protocol defines a default property that give us a contract to access to an instance of the class. We will use this property later.
 
-We can define an enum to identify the types of **Repository** that we are going to use in our app, but this is optional.
+We can define an enum to identify the types of **Repository** that we will use in our app, but this is optional.
 
 
 ```swift
@@ -58,7 +75,7 @@ enum RepositoryType: String {
 }
 ```
 
-Third, now we have to register this dependencies into to the container in order to be able to use them later as injectables values.
+Third, now we have to register this dependencies into the container in order to be able to use them later as injectables values.
 
 To achive this we are going to use the Injector class. This is a middleware that provide us with all the functions that we can use to access to the dependencies container.
 
@@ -97,9 +114,9 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 ```
 ---
 
-Now that we have all the dependencies registered into the container we can start using them in other classes as injectables and abstract properties.
+Now that all dependencies are registered into the container we can start using them in other classes as injectables properties.
 
-For that we are going to create a DummyService. This class is going to have one property of type **Repository**. This property is going to be wrapped by a custom property wrapper named **@Injectable**.
+For that we are going to create a DummyService. This class is going to have one property of type **Repository** and this property is going to be wrapped by a custom property wrapper named **@Injectable**.
 
 ```swift
 class DummyService {
@@ -114,11 +131,11 @@ class DummyService {
 Notice that we don't have to define any kind of initializer for the property *repository*. The **@Injectable** property wrapper will manage all the work of search into the dependencies container and extract an instance of an especific implementation of the **Repository** protocol.
 
 For this to be possible we only have to take into account two things. The first thing is that the data type of the property must be a protocol (previously registered in the container) and not a specific implementation.
-The second thing to note is that the property must be marked as an optional data type. The latter because in case the container is not able to find an implementation to inject it will return a nil.
+The second thing to note is that the property must be marked as an optional data type, because in case the container is not able to find an implementation to inject it will return a nil value.
 
 And that's all, by this point we can replicate this steps for every dependency we want to make injectable and start to using them all around in our project.
 
-### Tests
+## Tests
 
 We can easily mock our injected dependencies to make tests more efficient and reliable.
 
@@ -158,14 +175,14 @@ final class ServiceTest: XCTestCase {
 }
 ```
 
----
-**NOTE**
+## Demo
 
 Demo project. See the [demo](/Sources/swift-dependency-injector/demo) folder inside the repository's files for a more complex example.
 
 ---
 
 ## Docs
+
 ## Injector 
 
 This a class which works as a middleware that provide us with all the functions that we can use to access to the dependencies container.
@@ -175,41 +192,73 @@ This a class which works as a middleware that provide us with all the functions 
 
 #### Injector.register
 
-To register into the dependencies container a new abstraction and its corresponding implementations
+To register into the dependencies container a new abstraction and its corresponding implementations.
 
 **Parameters**:
 
-- **abstraction**: Generic type. The protocol to register as dependency
-- **defaultDependency**: The key to identify the implementation that is going to be injected
-- **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+- **abstraction**: Generic type. The protocol to register as dependency.
+- **defaultDependency**: The key to identify the implementation that will be injected.
+- **implementations**:A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> AnyObject?]) {}
+func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {}
 ```
 ---
 
 #### Injector.register
 
-To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction)
+To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction).
 
 **Parameters**:
 
-- **abstraction**: Generic type. The protocol to register as dependency
-- **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol )
+- **abstraction**: Generic type. The protocol to register as dependency.
+- **key**: The key to identify the implementation that will be injected. Can be omitted if you're sure this is the only implementations for the given abstraction.
+- **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, implementation: @escaping () -> AnyObject?) {}
+func register<Abstraction>(_ abstraction: Abstraction.Type, key: String = "", implementation: @escaping () -> Abstraction?) {}
 ```
 ---
 
-#### Injector.updateDependencyKey
 
-To change the default implementation injected for a given abstraction by changing the key used in the container
+#### Injector.add
+
+To add into the container a new set of implementations of an already registered abstraction.
 
 **Parameters**:
 
-- **abstraction**: Generic type. The protocol (already registered) to the one we want to change the injected implementation
-- **newKey**: A unique key that identifies the new implementation that is going to be injected by default
+- **abstraction**: Generic type. The protocol to register as dependency.
+- **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+
+```swift
+func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {}
+```
+---
+
+#### Injector.add
+
+To add into the container a new implementation of an already registered abstraction.
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol to register as dependency.
+- **key**: The key to identify the implementation that will be injected.
+- **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+
+```swift
+func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation: @escaping () -> Abstraction?) {}
+```
+---
+
+
+#### Injector.updateDependencyKey
+
+To change the default implementation injected for a given abstraction by changing the key used in the container.
+
+**Parameters**:
+
+- **abstraction**: Generic type. The protocol (already registered) to the one we want to change the injected implementation.
+- **newKey**: A unique key that identifies the new implementation that will be injected by default.
 
 ```swift
 func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: String) {}
@@ -218,12 +267,12 @@ func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: 
 
 #### Injector.resetSingleton
 
-To reset a specific or all the instances of a singleton dependency stored in the container
+To reset a specific or all the instances of a singleton dependency stored in the container.
 
 **Parameters**:
 
-- **abstraction**: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons
-- **key**: A unique key that identifies the specific implementation that is going to be reseted. Nil if we want to reset all the implementations registered for the given abstraction
+- **abstraction**: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.
+- **key**: A unique key that identifies the specific implementation that will be reseted. Nil if we want to reset all the implementations registered for the given abstraction.
 
 ```swift
 func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String? = nil) {}
@@ -254,16 +303,20 @@ func clear() {}
 
 #### Injector.turnOffLogger
 
-To turn off all the information messages logged by the injector ( It don't affect the error messages )
+To turn off the messages logged by the injector.
+
+**Parameters**:
+
+- **forced**: To know if error messages will be disabled too. False by default.
 
 ```swift
-func turnOffLogger() {}
+func func turnOffLogger(forced: Bool = false) {}
 ```
 ---
 
 #### Injector.turnOnLogger
 
-To turn on all the information messages logged by the injector ( It don't affect the error messages )
+To turn on all the information and error messages logged by the injector.
 
 ```swift
 func turnOnLogger() {}
@@ -275,7 +328,7 @@ func turnOnLogger() {}
 The property wrapper used to mark a property as an injectable dependency.
 It use a generic value to define the abstraction that encapsulates the injected implemententations.
 
-All the dependencies injected by using this property wrapper has two different ways of be instantiate.
+All the dependencies injected by using this property wrapper has two different ways of be injected (**InjectionType**).
 
 - **regular**: 
     - Every injection is going to create a new instance of the given implementation.
@@ -283,9 +336,16 @@ All the dependencies injected by using this property wrapper has two different w
     - Every injection is going to get an already stored instance of the given implementation.
     - When is the first injection, its going to create, store and return a new instance of the given implementation.
     
-**regular** is the default injection type, what it means that it doesn't need to be specified when we use the wrapper.
+And also will have two different ways of be instantiate (**InstantiationType**).    
 
-To use **regular** injection type:
+- **regular**:
+    - The implementation will be instantiate at the creation of the property wrapper.
+- **lazy**:
+    - The implementation will not be instantiate until it's required for the first time.
+    
+**regular** and **lazy** are the default injection and instantiation types, which means that it's not necessary to specified them when we use the wrapper.
+
+For example, to use **regular** injection type and **lazy** instantiation type we can do this:
 
 ```swift
 @Injectable private var repository: Repository?
@@ -293,42 +353,39 @@ To use **regular** injection type:
 or
 
 ```swift
-@Injectable(.regular) private var repository: Repository?
+@Injectable(injection: .regular, instantiation: .lazy)
+private var repository: Repository?
 ```
 
-And to use **singleton** injection type:
+And to use **singleton** injection type and **regular** instantiation type we can do something like this:
 
 ```swift
-@Injectable(.singleton) private var repository: Repository?
+@Injectable(injection: .singleton, instantiation: .regular) 
+private var repository: Repository?
+```
+---
+**NOTE**
+
+It's not necessary to specify both, we can only change one and let the other be selected by default, like this:
+
+```swift
+@Injectable(injection: .singleton) 
+private var repository: Repository?
 ```
 
-#### Wrapped value
-
-When we use the wrapped value of the property wrapper we are going to obtain the implementation injected in the base class when it was initialized.
-
-This means that this value it's going to be instantiate once per class, unless it was injected as a singleton, and we always going to obtain the same object.
-
-This is the regular implementation and its the mostly used.
-
 ```swift
-func getData() -> [Int] {
-    repository?.fetch() ?? []
-}
+@Injectable(instantiation: .regular) 
+private var repository: Repository?
 ```
+---
 
-#### Projected value
+## @ObservedInjectable
 
-When we use the projected value of the property wrapper we are going to obtain a new implementation every time we try to obtain the value of the dependency.
-
-This means that this value it's going to be instantiate once per call and we always going to obtain a new object.
-
-To achieve this we only have to use the '**$**' sign in every call.
-
+The property wrapper used to mark a property as an injectable dependency which can be replaced at runtime several times.
+It use a generic value to define the abstraction that encapsulates the injected implemententations.
 
 ```swift
-func getData() -> [Int] {
-    $repository?.fetch() ?? []
-}
+@ObservedInjectable private var repository: Repository?
 ```
 
 This feature can be useful when we want to change the implementation of a dependency in real time.
@@ -348,16 +405,74 @@ class DummyNetworkManager {
 }
 ```
 
-When the default dependencies key changes all the injectable properties that are using the projected value are going to start using the new implementation.
+When the default dependencies key changes a new implementation will be published to all the injectable properties that are using this property wrapper and this will automatically replace the previous stored implementation with the new one.
 
 And we can do this all the times we want and the implementations are going to change immediately.
+
+Unlike **@Injectable** this property wrapper doesn't expose the options to select the instantiation type or injection type.
+
+This means that all properties wrapped with **@ObservedInjectable** will be create with and injection type and an instantion type **regular**
+
+---
 
 ---
 **NOTES**
 
+- When we use the wrapped value of each property wrapper we will obtain the implementation injected and instantiate based on the selected parameters. This value could be nil if at some point occurs an error on the injection process.
 - It is important to note that when we update the default value of a key for a specific dependency, it has to match one of the keys we registered when saving the dependencies in the container.
 - This works for singleton dependencies too. We change the injected value but in this case is not going to be a new instance but a previous stored singleton instance of the new defined implementation.
 ---
+
+## Injection Errors
+
+- **AbstractionAlreadyRegistered**: 
+    - When an abstraction is already store into the container. 
+    - The container only allows to store one abstractions with one or many implementations.
+    
+- **ImplementationsCouldNotBeCasted**:
+    - When an implementation is trying to be injected but it couldn't be casted as the specified abstraction data type.
+    
+- **NotAbstrationFound**:
+    - When no registered abstraction was founded in the container with the given type.
+    
+- **AbstractionNotFoundForUpdate**:
+    - When an abstraction that is supposed to was stored into the container couldn't be found to update its values.
+    
+- **UndefinedRegistrationType**: 
+    -  When an abstraction is trying to be registered into the container with a registration type that is not handle yet.
+    
+- **NoImplementationFoundOnInjection**: 
+    - When an implementation could not be injected into the wrapper, which means the current value of the wrapper is nil.
+    
+- **NoPublisherFounded**: 
+    - When no publisher of a given abstraction could be found into the container.
+    
+- **NoImplementationFoundForPublish**: 
+    - When in the attempt to publish a new implementation of a given abstraction based on the current dependency key no implementation could be found into the implementations container.
+
+- **EqualDependecyKeyOnUpdate**:
+    - When in the attempt to update the default dependency key of a specific abstraction the key thats already stored is equal to the new key.
+
+## Injection types
+
+Defines how all the implementations that will be injected are going to be created and returned.
+
+- **regular**:
+    - Every injection will create a new instance of the given implementation when this case is selected.
+    
+- **singleton**:
+    - Every injection will get an already stored instance of the given implementation when this case is selected.
+    - When is the first injection, will create, store and return a new instance of the given implementation.
+    
+## Instantiation types
+
+Defines the moment of instantiation of an injected implementation.
+
+- **regular**:
+    - The implementation will be instantiate at the creation of the property wrapper.
+    
+- **lazy**:
+    - The implementation will not be instantiate until it's required for the first time.
 
 ## License
 

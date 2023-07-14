@@ -11,7 +11,7 @@ class ViewModel {
     @Injectable
     private var service: Service?
     
-    @Injectable(.singleton)
+    @Injectable(injection: .singleton)
     private var networkManager: NetworkManager?
     
     var data: [Int] = []

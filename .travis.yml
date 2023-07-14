@@ -1,0 +1,16 @@
+os: osx
+osx_image: xcode14.2
+language: objective-c
+
+ branches:
+  only:
+    - develop
+    - master
+
+script:
+  - swift build
+  - swift test --enable-code-coverage
+  - set -o pipefail test -enableCodeCoverage YES
+
+after_success:
+  - curl -Os https://uploader.codecov.io/latest/macos/codecov chmod +x codecov ./.build/arm64-apple-macosx/debug/SwiftDependencyInjector.json
