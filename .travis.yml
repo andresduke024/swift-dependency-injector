@@ -8,4 +8,4 @@ script:
   - set -o pipefail test -enableCodeCoverage YES
 
 after_success:
-  - curl -Os https://uploader.codecov.io/latest/macos/codecov chmod +x codecov ./.build/arm64-apple-macosx/debug/SwiftDependencyInjector.json
+  - bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
