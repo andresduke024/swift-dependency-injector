@@ -16,13 +16,17 @@ final class DependenciesContainer {
             return instance
         }
         
-        let newInstance = DependenciesManager()
+        let newInstance = DependenciesManager(targetValidator: TargetValidator())
         instance = newInstance
         return newInstance
     }
     
+    /// To store the current implementation of the manager
     private static var instance: DependenciesManagerProtocol?
     
+    
+    /// To change the current implementation of the manager
+    /// - Parameter newManager: A new class that implements DependenciesManagerProtocol
     static func setManager(_ newManager: DependenciesManagerProtocol) {
         instance = newManager
     }

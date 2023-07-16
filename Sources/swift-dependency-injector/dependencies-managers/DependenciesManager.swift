@@ -11,6 +11,13 @@ import Combine
 /// This class manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations.
 final class DependenciesManager: DependenciesManagerProtocol {
     
+    /// To perform validation about the current target 
+    private var targetValidator: TargetValidatorProtocol
+    
+    init(targetValidator: TargetValidatorProtocol) {
+        self.targetValidator = targetValidator
+    }
+        
     /// To store al the abstractions and its corresponding implementations wrapped inside of a 'ImplementationsContainer' class.
     /// The key used to idenfies each one its the abstraction's data type parsed as string.
     private(set) var container: [String: ImplementationsContainer] = [:]
@@ -95,7 +102,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     private func createRegistrationContext<Abstraction>(abstraction: Abstraction.Type, initialRegistrationType: RegistrationType, completion: GenerateContextCompletion) {
         let abstractionName = Utils.createName(for: abstraction)
 
-        guard !Utils.isRunningOnTestTarget else {
+        guard !targetValidator.isRunningOnTestTarget else {
             completion(abstractionName, .updateOrCreate)
             return
         }

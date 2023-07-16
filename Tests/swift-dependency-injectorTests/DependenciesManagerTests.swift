@@ -9,19 +9,18 @@ import XCTest
 import Combine
 @testable import swift_dependency_injector
 
-final class DependenciesManagerTests: XCTestCase {
+class DependenciesManagerTests: XCTestCase {
     
-    private var sut: DependenciesManager!
-    private var subscribers: Set<AnyCancellable>!
+    var sut: DependenciesManager!
+    private var subscribers: Set<AnyCancellable> = []
     
     override func setUpWithError() throws {
-        sut = DependenciesManager()
-        subscribers = Set<AnyCancellable>()
+        let targetValidatorMock = TargetValidatorMock(value: false)
+        sut = DependenciesManager(targetValidator: targetValidatorMock)
     }
     
     override func tearDownWithError() throws {
         sut = nil
-        subscribers = nil
     }
     
     func testRegisterAbstractionWithImplementationsGroup() {
@@ -196,7 +195,7 @@ final class DependenciesManagerTests: XCTestCase {
         
         XCTAssertNotNil(result1)
         XCTAssertNotNil(result2)
-        XCTAssertEqual(result1, result2)
+        XCTAssertNotEqual(result1, result2)
     }
     
     
@@ -238,13 +237,16 @@ final class DependenciesManagerTests: XCTestCase {
         let expectation = expectation(description: "Waiting for implementation publishing")
         
         result.sink { completion in
-            expectation.fulfill()
             if case .failure = completion {
                 XCTFail("Error on implementation publishig")
             }
+            expectation.fulfill()
         } receiveValue: { wrapper in
             expectation.fulfill()
         }.store(in: &subscribers)
+        
+        sut.requestPublisherUpdate(of: DummyDependencyMockProtocol.self)
+        
 
         waitForExpectations(timeout: 1.0)
     }

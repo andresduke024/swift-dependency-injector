@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 protocol DependenciesManagerProtocol {
+    
     /// To register into the container a new abstraction and its corresponding implementations.
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency.
