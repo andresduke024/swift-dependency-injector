@@ -57,3 +57,5 @@ final class DummyDependencyFourMock: DummyDependencyMockProtocol, InjectableDepe
     }
 }
 
+final class DummyDependency {}
+

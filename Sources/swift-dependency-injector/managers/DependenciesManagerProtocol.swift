@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+/// To define the behavior to manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations.
 protocol DependenciesManagerProtocol {
     
     /// To register into the container a new abstraction and its corresponding implementations.

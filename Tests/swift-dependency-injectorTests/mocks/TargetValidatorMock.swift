@@ -10,11 +10,15 @@ import Foundation
 
 struct TargetValidatorMock: TargetValidatorProtocol {
     
-    private var value: Bool
+    var value: Bool
     
     init(value: Bool) {
         self.value = value
     }
     
     var isRunningOnTestTarget: Bool { value }
+    
+    func copy() -> TargetValidatorProtocol {
+        TargetValidatorMock(value: self.value)
+    }
 }

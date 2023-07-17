@@ -9,18 +9,22 @@ import XCTest
 @testable import swift_dependency_injector
 
 final class ViewModelWithoutInjectionTest: XCTestCase {
+    private var injector: Injector!
     private var sut: ViewModel!
     
     override func setUp() {
-        Injector.turnOffLogger()
-        Injector.remove(Service.self)
-        Injector.resetSingleton(of: NetworkManager.self)
-        Injector.clear()
+        injector = Injector.build(context: .tests(name: "ViewModel"))
+        
+        injector.turnOffLogger()
+        injector.remove(Service.self)
+        injector.resetSingleton(of: NetworkManager.self)
+        injector.clear()
         sut = ViewModel()
     }
 
     override func tearDown() {
-        Injector.turnOnLogger()
+        injector.turnOnLogger()
+        injector.destroy()
         sut = nil
     }
 

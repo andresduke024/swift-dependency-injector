@@ -9,21 +9,22 @@ import XCTest
 @testable import swift_dependency_injector
 
 final class ServiceTest: XCTestCase {
-    private var sut: Service!
+    private var injector: Injector!
     
     override func setUp() {
-        Injector.register(Repository.self, implementation: RepositoryMock.instance)
-        sut = DummyService()
+        injector = Injector.build(context: .tests(name: "Service"))
     }
     
     override func tearDown() {
-        sut = nil
+        injector.destroy()
     }
     
     func testFetchDataSuccess() throws {
         let expected = [1,2,3,4]
         
-        RepositoryMock.shouldSucced = true
+        injector.register(Repository.self, implementation: RepositorySuccessMock.instance)
+        let sut = DummyService()
+        
         let result = sut.getData()
         
         XCTAssertEqual(result, expected)
@@ -32,7 +33,9 @@ final class ServiceTest: XCTestCase {
     func testFetchDataFail() throws {
         let expected = [Int]()
         
-        RepositoryMock.shouldSucced = false
+        injector.register(Repository.self, implementation: RepositoryFailMock.instance)
+        let sut = DummyService()
+        
         let result = sut.getData()
         
         XCTAssertEqual(result, expected)

@@ -9,22 +9,24 @@ import XCTest
 @testable import swift_dependency_injector
 
 final class ViewModelTest: XCTestCase {
-    private var sut: ViewModel!
+    private let contextName = "ViewModel"
+    private var injector: Injector!
     
     override func setUp() {
-        Injector.register(Service.self, implementation: ServiceMock.instance)
-        Injector.register(NetworkManager.self, implementation: NetworkManagerMock.instance)
-        sut = ViewModel()
+        injector = Injector.build(context: .tests(name: contextName))
+        injector.register(NetworkManager.self, implementation: NetworkManagerMock.instance)
     }
     
     override func tearDown() {
-        sut = nil
+        injector.destroy()
     }
     
     func testGetDataSuccess() throws {
         let expected = [1,2,3,4]
         
-        ServiceMock.shouldSucced = true
+        injector.register(Service.self, implementation: ServiceSuccessMock.instance)
+        let sut = ViewModel()
+        
         sut.loadData()
         
         XCTAssertEqual(sut.data, expected)
@@ -33,7 +35,9 @@ final class ViewModelTest: XCTestCase {
     func testGetDataFail() throws {
         let expected = [Int]()
         
-        ServiceMock.shouldSucced = false
+        injector.register(Service.self, implementation: ServiceFailMock.instance)
+        let sut = ViewModel()
+        
         sut.loadData()
         
         XCTAssertEqual(sut.data, expected)

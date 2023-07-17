@@ -12,4 +12,9 @@ struct TargetValidator: TargetValidatorProtocol {
     var isRunningOnTestTarget: Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
+    
+    /// To get a new instance of the class (new memory reference).
+    func copy() -> TargetValidatorProtocol {
+        TargetValidator()
+    }
 }

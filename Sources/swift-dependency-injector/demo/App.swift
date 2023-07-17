@@ -12,9 +12,10 @@ class App {
         ApplicationSetup.start()
     }
     
-    func main() {
+    func main() -> [Int] {
         let viewModel = ViewModel()
         viewModel.loadData()
         print("The data was loaded \(viewModel.data)")
+        return viewModel.data
     }
 }

@@ -2,6 +2,7 @@
 
 [![Swift](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8-blue?style=flat-square)](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8-blue?style=flat-square)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SwiftDependencyInjector.svg?style=flat-square)](https://img.shields.io/cocoapods/v/SwiftDependencyInjector.svg?style=flat-square)
 
 
 A native dependency container written in swift that manages the initialization, store, and injection of the dependencies of a given abstraction fast and safety.
@@ -16,7 +17,8 @@ A native dependency container written in swift that manages the initialization, 
     - Injector
     - @Injectable
     - @ObservedInjectable
-    - Injection Errors
+    - Injection contexts
+    - Injection errors
     - Injection types
     - Instantiation types
 - License
@@ -88,7 +90,7 @@ Third, now we have to register this dependencies into the container in order to 
 To achive this we are going to use the Injector class. This is a middleware that provide us with all the functions that we can use to access to the dependencies container.
 
 ```swift
-Injector.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
+Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
     RepositoryType.remote.rawValue : RemoteRepository.instance,
     RepositoryType.local.rawValue : LocalRepository.instance
 ])
@@ -106,7 +108,7 @@ We recommend to register all the dependencies at the very beginning of the appli
 ```swift
 class ApplicationSetup {
     static func start() {
-        Injector.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
+        Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
             RepositoryType.remote.rawValue : RemoteRepository.instance,
             RepositoryType.local.rawValue : LocalRepository.instance
         ])
@@ -157,30 +159,34 @@ class RepositoryMock: Repository, InjectableDependency {
 ```
 
 The only thing we have to do now is register the mock dependency in our test file.
+We can create a "test" injection context to isolate our injections.
 
 ```swift
 final class ServiceTest: XCTestCase {
+    private var injector: Injector!
     private var sut: Service!
     
     override func setUp() {
-        Injector.register(Repository.self, implementation: RepositoryMock.instance)
+        injector = Injector.build(context: .tests(name: "Service"))
+        injector.register(Repository.self, implementation: RepositoryMock.instance)
+        
         sut = DummyService()
     }
     
     override func tearDown() {
-        Injector.clear()
+        injector.destroy()
         sut = nil
     }
     
-    func testFetchDataSuccess() throws {
+    func testFetchData() throws {
         let expected = [1,2,3,4]
         
-        RepositoryMock.shouldSucced = true
         let result = sut.getData()
         
         XCTAssertEqual(result, expected)
     }
 }
+
 ```
 
 ## Demo
@@ -195,10 +201,42 @@ Demo project. See the [demo](/Sources/swift-dependency-injector/demo) folder ins
 
 This a class which works as a middleware that provide us with all the functions that we can use to access to the dependencies container.
 
+### Static members
+
+#### Injector.build
+
+To create a new instance of this class which runs on a isolated context.
+
+**Parameters**:
+
+- **context**: The new injection context that will be registered and use later to access to the dependencies container.
+
+**Returns**:
+
+- **Injector**: A new instance of itself
+
+```swift
+static func build(context: InjectionContext) -> Injector {}
+```
+---
+
+#### Injector.global
+
+A default instance of the class builded to run in a global injection context
+
+**Returns**:
+
+- **Injector**: A singleton instance of itself
+
+```swift
+static var global: Injector
+```
+---
+
 ### Functions
 ---
 
-#### Injector.register
+#### register
 
 To register into the dependencies container a new abstraction and its corresponding implementations.
 
@@ -213,7 +251,7 @@ func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: S
 ```
 ---
 
-#### Injector.register
+#### register
 
 To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction).
 
@@ -229,7 +267,7 @@ func register<Abstraction>(_ abstraction: Abstraction.Type, key: String = "", im
 ---
 
 
-#### Injector.add
+#### add
 
 To add into the container a new set of implementations of an already registered abstraction.
 
@@ -243,7 +281,7 @@ func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String:
 ```
 ---
 
-#### Injector.add
+#### add
 
 To add into the container a new implementation of an already registered abstraction.
 
@@ -258,8 +296,7 @@ func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementati
 ```
 ---
 
-
-#### Injector.updateDependencyKey
+#### updateDependencyKey
 
 To change the default implementation injected for a given abstraction by changing the key used in the container.
 
@@ -273,7 +310,7 @@ func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: 
 ```
 ---
 
-#### Injector.resetSingleton
+#### resetSingleton
 
 To reset a specific or all the instances of a singleton dependency stored in the container.
 
@@ -287,7 +324,7 @@ func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String? 
 ```
 ---
 
-#### Injector.remove
+#### remove
 
 To remove all the registed implementations of a given abstraction and the abstraction itself
 
@@ -300,7 +337,7 @@ func remove<Abstraction>(_ abstraction: Abstraction.Type) {}
 ```
 ---
 
-#### Injector.clear
+#### clear
 
 To remove all the registered abstractions and implementations
 
@@ -309,7 +346,7 @@ func clear() {}
 ```
 ---
 
-#### Injector.turnOffLogger
+#### turnOffLogger
 
 To turn off the messages logged by the injector.
 
@@ -322,12 +359,21 @@ func func turnOffLogger(forced: Bool = false) {}
 ```
 ---
 
-#### Injector.turnOnLogger
+#### turnOnLogger
 
 To turn on all the information and error messages logged by the injector.
 
 ```swift
 func turnOnLogger() {}
+```
+---
+
+#### destroy
+
+To remove the current context from the dependencies container.
+
+```swift
+func destroy() {}
 ```
 ---
 
@@ -429,6 +475,55 @@ This means that all properties wrapped with **@ObservedInjectable** will be crea
 - When we use the wrapped value of each property wrapper we will obtain the implementation injected and instantiate based on the selected parameters. This value could be nil if at some point occurs an error on the injection process.
 - It is important to note that when we update the default value of a key for a specific dependency, it has to match one of the keys we registered when saving the dependencies in the container.
 - This works for singleton dependencies too. We change the injected value but in this case is not going to be a new instance but a previous stored singleton instance of the new defined implementation.
+---
+
+## Injection Contexts 
+
+The injection contexts are used to separe a set of injectable abstractions and implementations from the ones used globaly all around the app.
+
+This is useful to constraint a class to only extract implementations from a safe and isolated container and not from a global container that could be mutated from every where in the application. 
+
+Exists three types of injection contexts:
+
+- **global**: Used by the whole application, all dependencies will be registered into this context by default and it's accesible from every where. 
+- **custom**: 
+    - All the dependencies registered into this context will be isolated and only will be accessed when is requeried. 
+    - This context can be created with a custom name (identifier) what it means that we can created every custom injection contexts as we want.
+- **tests**: 
+    - All the dependencies registered into this context will be isolated and only will be accessed when is requeried. 
+    - This context can be created with a custom name (identifier) what it means that we can created every tests injection contexts as we want.
+    - This context is very useful to isolate test cases and be sure that tests don't affect each other.
+    - This context needs to know the name of the file where the subject (class) we will test is defined.
+
+---
+
+We can create a new injection context just by using the built in function **build(context:)** of the **Injector** class.
+
+```swift
+func setUp() {
+    let injector = Injector.build(context: .custom(name: "Service"))
+    
+    injector.register(Repository.self, implementation: LocalRepository.instance)
+}
+```
+---
+
+Both wrappers (@Injectable and @ObservedInjectable) also has the capability to specific a custom injection context to extract the implementation from a isolated container.
+
+```swift
+@Injectable(context: .custom(name: "DummyContext"))
+private var service: Service?
+```
+
+This means when we will try to access to the wrapped value of the property, the dependencies contaier will search into the dependencies registered for the specified context and will extract from there a new implementation. 
+
+When the container can't find a dependency in the context it will return nil. It never use the global context to search for a implementation.
+
+---
+**NOTES**
+
+- By default all dependencies are created and injected using the global context.
+- When we use a class with injectable properties which were created in the global injection context inside a Test case, the injector always gonna try search for a tests injection context. if we not previous define a related context for the test case to use it, it will get all the injections from global context.
 ---
 
 ## Injection Errors

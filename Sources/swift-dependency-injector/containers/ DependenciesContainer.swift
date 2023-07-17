@@ -9,27 +9,14 @@ import Foundation
 import Combine
 
 final class DependenciesContainer {
+    static let defaultInstance: ContextManagerProtocol = ContextManager(targetValidator: TargetValidator())
+    static var global: ContextManagerProtocol = defaultInstance
     
-    /// A singleton instance of the class.
-    static var shared: DependenciesManagerProtocol {
-        if let instance {
-            return instance
-        }
-        
-        let newInstance = DependenciesManager(targetValidator: TargetValidator())
-        instance = newInstance
-        return newInstance
+    static func setContextManager(_ manager: ContextManagerProtocol) {
+        self.global = manager
     }
     
-    /// To store the current implementation of the manager
-    private static var instance: DependenciesManagerProtocol?
-    
-    
-    /// To change the current implementation of the manager
-    /// - Parameter newManager: A new class that implements DependenciesManagerProtocol
-    static func setManager(_ newManager: DependenciesManagerProtocol) {
-        instance = newManager
+    static func reset() {
+        global = defaultInstance
     }
-    
-    private init() {}
 }
