@@ -24,19 +24,6 @@ struct Logger {
         print(errorPrefix, errorName, error.message)
     }
     
-    /// To cast and print an error message into console.
-    /// - Parameter error: Some kind of 'Error'. Mostly of type InjectionErrors.
-    static func log(_ error: Error) {
-        guard isActive else { return }
-        
-        if let injectionError = error as? InjectionErrors {
-            log(injectionError)
-            return
-        }
-        
-        print(errorPrefix, error.localizedDescription)
-    }
-    
     /// To print a message into console.
     /// - Parameters:
     ///   - message: The message that is going to be printed.

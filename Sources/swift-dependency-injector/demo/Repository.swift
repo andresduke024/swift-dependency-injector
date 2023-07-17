@@ -10,7 +10,6 @@ import Foundation
 enum RepositoryType: String {
     case local
     case remote
-    case dummy
 }
 
 protocol Repository {
@@ -27,10 +26,4 @@ class RemoteRepository: Repository, InjectableDependency {
     required init() {}
     
     func fetch() -> [Int] { [5, 6, 7, 8] }
-}
-
-class DummyRepository: Repository, InjectableDependency {
-    required init() {}
-    
-    func fetch() -> [Int] { [9, 10, 11, 12] }
 }

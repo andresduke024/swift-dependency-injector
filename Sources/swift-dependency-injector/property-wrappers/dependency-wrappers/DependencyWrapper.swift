@@ -21,9 +21,15 @@ open class DependencyWrapper<Abstraction> {
     /// To store the current injected implementation.
     var value: Abstraction?
     
-    init(_ filePath: String, _ line: Int) {
+    var constraintKey: String?
+    
+    var context: InjectionContext
+    
+    init(_ filePath: String, _ line: Int, _ context: InjectionContext, constrainedTo key: String? = nil) {
         self.filePath = filePath
         self.line = line
+        self.context = context
+        self.constraintKey = key
     }
     
     /// A facade function  used to perform all the validations and processes required before obtain an injected implementation.

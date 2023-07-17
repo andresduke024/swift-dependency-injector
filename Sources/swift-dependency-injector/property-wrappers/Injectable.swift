@@ -24,12 +24,17 @@ public struct Injectable<Abstraction> {
     ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
+    ///   - context: To specific a special injection context to extract the implementation to inject from a isolated container.
+    ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
     public init(
         injection injectionType: InjectionType = .regular,
         instantiation instantiationType: InstantiationType = .lazy,
         _ file: String = #file,
-        _ line: Int = #line
+        _ line: Int = #line,
+        context: InjectionContext = .global,
+        constrainedTo key: String? = nil
     ) {
-        self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line)
+        let realContext = DependenciesContainer.global.transformToValidContext(context, fileName: Utils.extractFileName(of: file, withExtension: false))
+        self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line, realContext, constrainedTo: key)
     }
 }

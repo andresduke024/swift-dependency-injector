@@ -9,15 +9,13 @@ import Foundation
 
 class ApplicationSetup {
     static func start() {
-        Injector.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
+        Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
             RepositoryType.remote.rawValue : RemoteRepository.instance,
             RepositoryType.local.rawValue : LocalRepository.instance
         ])
         
-        Injector.register(NetworkManager.self, implementation: DummyNetworkManager.instance)
+        Injector.global.register(NetworkManager.self, implementation: DummyNetworkManager.instance)
         
-        Injector.register(Service.self, implementation: DummyService.instance)
-        
-        Injector.add(Repository.self, key: RepositoryType.dummy.rawValue, implementation: DummyRepository.instance)
+        Injector.global.register(Service.self, implementation: DummyService.instance)
     }
 }

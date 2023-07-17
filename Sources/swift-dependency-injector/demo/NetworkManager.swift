@@ -18,6 +18,6 @@ class DummyNetworkManager: NetworkManager, InjectableDependency {
         let isNetworkAvailable = Bool.random()
         
         let repositoryImplementation: RepositoryType = isNetworkAvailable ? .remote : .local
-        Injector.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
+        Injector.global.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
     }
 }

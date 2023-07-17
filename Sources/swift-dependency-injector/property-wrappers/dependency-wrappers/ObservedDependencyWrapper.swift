@@ -17,9 +17,9 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// To identify this wrapper as an unique subscriber
     private let id: String
     
-    override init(_ filePath: String, _ line: Int) {
+    init(_ filePath: String, _ line: Int, _ context: InjectionContext) {
         self.id = String.join(Utils.extractFileName(of: filePath, withExtension: false), Utils.createName(for: Abstraction.self), UUID().uuidString, separator: ":")
-        super.init(filePath, line)
+        super.init(filePath, line, context)
         subscribeToDependencyPublisher()
         manageOnInitInstantiation()
     }
@@ -29,22 +29,28 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// - Returns: An optional implementation of the given abstraction.
     override func unwrapValue() -> Abstraction? {
         if value == nil {
-            DependenciesContainer.shared.requestPublisherUpdate(of: Abstraction.self, subscriber: id)
+            tryToUpdateValue()
         }
         
         checkInjectionError()
         return value
     }
+
+    /// To validate if the class is successfully subscribed to the dependency publisher and request an update from it.
+    private func tryToUpdateValue() {
+        if subscriber == nil { subscribeToDependencyPublisher() }
+        DependenciesContainer.global.get(context).requestPublisherUpdate(of: Abstraction.self, subscriber: id)
+    }
     
     /// To manage and define the way and the moment at the implementation has to be instantiated.
     /// It will request a injection of the given abstraction but only for this wrapper.
     private func manageOnInitInstantiation() {
-        DependenciesContainer.shared.requestPublisherUpdate(of: Abstraction.self, subscriber: id)
+        DependenciesContainer.global.get(context).requestPublisherUpdate(of: Abstraction.self, subscriber: id)
     }
     
     /// It obtains and subscribes to a publisher of the given abstraction.
     private func subscribeToDependencyPublisher() {
-        guard let publisher = DependenciesContainer.shared.getPublisher(of: Abstraction.self) else {
+        guard let publisher = DependenciesContainer.global.get(context).getPublisher(of: Abstraction.self) else {
             catchErrorGettingPublisher()
             return
         }
@@ -63,7 +69,7 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     private func catchErrorGettingPublisher() {
         let abstractionName = Utils.createName(for: Abstraction.self)
         Logger.log(InjectionErrors.noPublisherFounded(abstractionName))
-        value = DependenciesContainer.shared.get(with: .regular)
+        value = DependenciesContainer.global.get(context).get(with: .regular, key: constraintKey)
     }
     
     /// To manage when the abstraction's publisher send a completion event.
