@@ -17,7 +17,7 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// To identify this wrapper as an unique subscriber
     private let id: String
     
-    override init(_ filePath: String, _ line: Int, _ context: InjectionContext) {
+    init(_ filePath: String, _ line: Int, _ context: InjectionContext) {
         self.id = String.join(Utils.extractFileName(of: filePath, withExtension: false), Utils.createName(for: Abstraction.self), UUID().uuidString, separator: ":")
         super.init(filePath, line, context)
         subscribeToDependencyPublisher()
@@ -69,7 +69,7 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     private func catchErrorGettingPublisher() {
         let abstractionName = Utils.createName(for: Abstraction.self)
         Logger.log(InjectionErrors.noPublisherFounded(abstractionName))
-        value = DependenciesContainer.global.get(context).get(with: .regular)
+        value = DependenciesContainer.global.get(context).get(with: .regular, key: constraintKey)
     }
     
     /// To manage when the abstraction's publisher send a completion event.

@@ -50,7 +50,7 @@ class DependenciesManagerMock: DependenciesManagerProtocol {
         resetSingletonWasCall = true
     }
     
-    func get<Abstraction>(with injectionType: InjectionType) -> Abstraction? {
+    func get<Abstraction>(with injectionType: InjectionType, key: String?) -> Abstraction? {
         getWasCall = true
         return nil
     }

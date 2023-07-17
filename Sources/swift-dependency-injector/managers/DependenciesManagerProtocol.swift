@@ -51,9 +51,11 @@ protocol DependenciesManagerProtocol {
     func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String?)
     
     /// To extract a specific implementation from the container and make an upcasting to the abstraction data type.
-    /// - Parameter injectionType: An enum that defines if the implementations that will be injected is going to be extracted as a singleton or as a regular dependency (a new instance).
+    /// - Parameters:
+    ///   - injectionType: An enum that defines if the implementations that will be injected is going to be extracted as a singleton or as a regular dependency (a new instance).
+    ///   - key: To extract a implementation based on a specific key and ignoring the current one.
     /// - Returns: An implementation wrapped as the especific abstraction define in the generic type of the function or nil in case something goes wrong in the process.
-    func get<Abstraction>(with injectionType: InjectionType) -> Abstraction?
+    func get<Abstraction>(with injectionType: InjectionType, key: String?) -> Abstraction? 
     
     /// To extract from the container the publisher that will send the new implementations to the subscribed injectors.
     /// - Parameter abstraction: Generic type. The protocol that was registered as dependency.

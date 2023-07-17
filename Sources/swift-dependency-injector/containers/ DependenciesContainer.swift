@@ -14,6 +14,7 @@ final class DependenciesContainer {
     
     static func setContextManager(_ manager: ContextManagerProtocol) {
         self.global = manager
+        Logger.log("New context manager set successfuly on DependenciesContainer")
     }
     
     static func reset() {

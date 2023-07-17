@@ -34,4 +34,16 @@ public enum InjectionContext {
             return name
         }
     }
+    
+    /// To get a description of the context
+    public var description: String {
+        switch self {
+        case .global:
+            return "global"
+        case .tests(let name):
+            return "tests:\(name)"
+        case .custom(let name):
+            return "custom:\(name)"
+        }
+    }
 }

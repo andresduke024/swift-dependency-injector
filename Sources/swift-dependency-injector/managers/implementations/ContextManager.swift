@@ -38,8 +38,9 @@ final class ContextManager: ContextManagerProtocol {
     /// - Parameter context: The context to identify and access to the especific manager.
     /// - Returns: The new manager. Already stored into a container
     func register(_ context: InjectionContext) -> DependenciesManagerProtocol {
-        let newInstance = DependenciesManager(targetValidator: targetValidator.copy())
+        let newInstance = DependenciesManager(targetValidator: targetValidator.copy(), context: context)
         managers[context.id] = newInstance
+        Logger.log("New context registered successfully -> \(context.description)")
         return newInstance
     }
     
@@ -47,6 +48,7 @@ final class ContextManager: ContextManagerProtocol {
     /// - Parameter context: The context to delete.
     func remove(_ context: InjectionContext) {
         managers.removeValue(forKey: context.id)
+        Logger.log("Context with identifier \(context.id) removed successfully")
     }
     
     /// To validate if a dependency will be injected from a test target and create a custom context (based on the original class file name) that isolates the injection if is the case.

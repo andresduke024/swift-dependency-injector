@@ -16,10 +16,10 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
     ///To define at which point the implementation will be instantiated.
     private let instantiationType: InstantiationType
         
-    init(_ injectionType: InjectionType, _ instantiationType: InstantiationType, _ filePath: String, _ line: Int, _ context: InjectionContext) {
+    init(_ injectionType: InjectionType, _ instantiationType: InstantiationType, _ filePath: String, _ line: Int, _ context: InjectionContext, constrainedTo key: String? = nil) {
         self.injectionType = injectionType
         self.instantiationType = instantiationType
-        super.init(filePath, line, context)
+        super.init(filePath, line, context, constrainedTo: key)
         manageOnInitInstantiation()
     }
     
@@ -33,7 +33,7 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
             return
         }
         
-        value = DependenciesContainer.global.get(context).get(with: injectionType)
+        value = DependenciesContainer.global.get(context).get(with: injectionType, key: constraintKey)
         checkInjectionError()
     }
     
@@ -42,7 +42,7 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
     /// - Returns: An optional implementation of the given abstraction.
     override func unwrapValue() -> Abstraction? {
         if value == nil, instantiationType == .lazy {
-            value = DependenciesContainer.global.get(context).get(with: injectionType)
+            value = DependenciesContainer.global.get(context).get(with: injectionType, key: constraintKey)
         }
         
         checkInjectionError()

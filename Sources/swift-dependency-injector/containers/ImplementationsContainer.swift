@@ -48,18 +48,20 @@ final class ImplementationsContainer {
     /// To get an instance of specific implementation base on the stored current key.
     /// - Parameter injectionType: An enum that defines if the instance of the implementation will be a new instance or an already created and stored instance.
     /// - Returns: An instance of the specific implementation.
-    func get(with injectionType: InjectionType) -> AnyObject? {
-        let implementation = implementations[currentKey]?()
+    func get(with injectionType: InjectionType, constraintKey: String? = nil) -> AnyObject? {
+        let key = constraintKey ?? currentKey
+        
+        let implementation = implementations[key]?()
         
         if injectionType == .regular {
             return implementation
         }
         
-        if let singletonImpl = singletons[currentKey] {
+        if let singletonImpl = singletons[key] {
             return singletonImpl
         }
         
-        singletons[currentKey] = implementation
+        singletons[key] = implementation
         return implementation
     }
 
