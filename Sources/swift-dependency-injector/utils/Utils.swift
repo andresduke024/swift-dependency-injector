@@ -10,11 +10,6 @@ import Foundation
 /// Common utilities.
 struct Utils {
     
-    /// To know if the application which is using the package is running unit tests.
-    static var isRunningOnTestTarget: Bool {
-        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-    }
-    
     /// To extract name as string from generic object.
     /// - Parameter object: Any object.
     /// - Returns: A representation of object name.

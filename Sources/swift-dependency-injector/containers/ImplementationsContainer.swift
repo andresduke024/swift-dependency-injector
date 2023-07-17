@@ -18,7 +18,7 @@ final class ImplementationsContainer {
     private var abstractionName: String
     
     /// The key that identifies the implementation that will be injected in every injection attempt.
-    private var currentKey: String
+    private(set) var currentKey: String
     
     /// To store the builder of each implementation.
     private let implementations: InitializersContainer

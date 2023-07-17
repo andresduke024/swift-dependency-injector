@@ -22,10 +22,13 @@ public struct ObservedInjectable<Abstraction> {
     /// - Parameters:
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
+    ///   - context: To specific a special injection context to extract the implementation to inject from a isolated container.
     public init(
         _ file: String = #file,
-        _ line: Int = #line
+        _ line: Int = #line,
+        context: InjectionContext = .global
     ) {
-        self.dependency = ObservedDependencyWrapper(file, line)
+        let realContext = DependenciesContainer.global.transformToValidContext(context, fileName: Utils.extractFileName(of: file, withExtension: false))
+        self.dependency = ObservedDependencyWrapper(file, line, realContext)
     }
 }
