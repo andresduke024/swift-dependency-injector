@@ -7,13 +7,11 @@
 
 import Foundation
 
-
-
 /// This class can be used as middleware to access to the injection and registration functionalities implemented in the package
 public struct Injector {
     
     /// A default instance of the injector class builded to run in a global injection context
-    private(set) static var global: Injector = build(context: .global)
+    public private(set) static var global: Injector = build(context: .global)
     
     /// To create a new instance of this class which runs on a isolated context.
     /// - Parameter context: The new injection context that will be registered and use later to access to the dependencies container.
