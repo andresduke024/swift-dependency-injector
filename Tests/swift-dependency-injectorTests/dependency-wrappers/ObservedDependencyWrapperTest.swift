@@ -69,7 +69,7 @@ final class ObservedDependencyWrapperTest: XCTestCase {
         
         let sut = ObservedDependencyWrapper<DummyDependencyMockProtocol>(#file, #line, injectionContext)
         
-        mockContextManager.dependenciesManager.publisher.send(completion: .failure(.abstractionAlreadyRegistered("DummyDependencyMockProtocol")))
+        mockContextManager.dependenciesManager.publisher.send(completion: .failure(.abstractionAlreadyRegistered("DummyDependencyMockProtocol", injectionContext)))
         
         XCTAssertNil(sut.value)
     }

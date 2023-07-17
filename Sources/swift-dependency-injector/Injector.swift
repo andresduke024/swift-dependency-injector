@@ -106,4 +106,11 @@ public struct Injector {
     public func destroy() {
         DependenciesContainer.global.remove(context)
     }
+    
+    /// To get the key that is being use to inject dependencies of a specific abstraction.
+    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
+    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
+    public func getCurrentKey<Abstraction>(of abstraction: Abstraction.Type) -> String? {
+        DependenciesContainer.global.get(context).getCurrentKey(of: abstraction)
+    }
 }

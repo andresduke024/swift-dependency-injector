@@ -14,8 +14,11 @@ final class DependenciesManager: DependenciesManagerProtocol {
     /// To perform validation about the current target 
     private var targetValidator: TargetValidatorProtocol
     
-    init(targetValidator: TargetValidatorProtocol) {
+    private let context: InjectionContext
+    
+    init(targetValidator: TargetValidatorProtocol, context: InjectionContext) {
         self.targetValidator = targetValidator
+        self.context = context
     }
         
     /// To store al the abstractions and its corresponding implementations wrapped inside of a 'ImplementationsContainer' class.
@@ -122,12 +125,12 @@ final class DependenciesManager: DependenciesManagerProtocol {
     ///   - completion: A closure that provides the abstraction name as String and the real registration type.
     private func validateNewAbstraction(_ registrationType: RegistrationType, _ abstractionName: String, completion: GenerateContextCompletion) {
         guard registrationType == .create else {
-            Logger.log(InjectionErrors.undefinedRegistrationType(abstractionName))
+            Logger.log(.undefinedRegistrationType(abstractionName))
             return
         }
         
         guard container[abstractionName] == nil else {
-            Logger.log(.abstractionAlreadyRegistered(abstractionName))
+            Logger.log(.abstractionAlreadyRegistered(abstractionName, context))
             return
         }
         
@@ -158,7 +161,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
     private func update(abstractionName: String, implementations: InitializersContainer) {
         guard let implementationsContainer = container[abstractionName] else {
-            Logger.log(InjectionErrors.abstractionNotFoundForUpdate(abstractionName))
+            Logger.log(.abstractionNotFoundForUpdate(abstractionName))
             return
         }
         
@@ -200,7 +203,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: String) {
         let abstractionName = Utils.createName(for: abstraction)
         guard let item = container[abstractionName] else {
-            Logger.log(InjectionErrors.notAbstrationFound(abstractionName))
+            Logger.log(.notAbstrationFound(abstractionName, context: context))
             return
         }
         
@@ -214,7 +217,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String? = nil) {
         let abstractionName = Utils.createName(for: abstraction)
         guard let item = container[abstractionName] else {
-            Logger.log(InjectionErrors.notAbstrationFound(abstractionName))
+            Logger.log(.notAbstrationFound(abstractionName, context: context))
             return
         }
         
@@ -222,14 +225,19 @@ final class DependenciesManager: DependenciesManagerProtocol {
     }
     
     /// To extract a specific implementation from the container and make an upcasting to the abstraction data type.
-    /// - Parameter injectionType: An enum that defines if the implementations that will be injected is going to be extracted as a singleton or as a regular dependency (a new instance).
+    /// - Parameters:
+    ///   - injectionType: An enum that defines if the implementations that will be injected is going to be extracted as a singleton or as a regular dependency (a new instance).
+    ///   - key: To extract a implementation based on a specific key and ignoring the current one.
     /// - Returns: An implementation wrapped as the especific abstraction define in the generic type of the function or nil in case something goes wrong in the process.
-    func get<Abstraction>(with injectionType: InjectionType) -> Abstraction? {
+    func get<Abstraction>(with injectionType: InjectionType, key: String? = nil) -> Abstraction? {
         let abstractionName = Utils.createName(for: Abstraction.self)
-        guard let implementations = container[abstractionName] else { return nil }
+        guard let implementations = container[abstractionName] else {
+            Logger.log(.notAbstrationFound(abstractionName, context: context))
+            return nil
+        }
         
-        guard let implementation: Abstraction = AbstractionMapper.map(implementations.get(with: injectionType)) else {
-            Logger.log(InjectionErrors.implementationsCouldNotBeCasted(abstractionName))
+        guard let implementation: Abstraction = AbstractionMapper.map(implementations.get(with: injectionType, constraintKey: key)) else {
+            Logger.log(.implementationsCouldNotBeCasted(abstractionName))
             return nil
         }
 
@@ -265,5 +273,13 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func clear() {
         container.removeAll()
         Logger.log("All registered abstractions and implementations were removed successfully from container")
+    }
+    
+    /// To get the key that is being use to inject dependencies of a specific abstraction.
+    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
+    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
+    func getCurrentKey<Abstraction>(of abstraction: Abstraction.Type) -> String? {
+        let abstractionName = Utils.createName(for: abstraction)
+        return container[abstractionName]?.currentKey
     }
 }

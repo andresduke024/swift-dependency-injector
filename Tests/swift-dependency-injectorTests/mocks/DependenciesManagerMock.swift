@@ -10,7 +10,7 @@ import Combine
 @testable import swift_dependency_injector
 
 class DependenciesManagerMock: DependenciesManagerProtocol {
-    
+   
     var publisher = PassthroughSubject<ImplementationWrapper, InjectionErrors>()
     
     var registerManyImplementationsWasCall: Bool = false
@@ -24,7 +24,7 @@ class DependenciesManagerMock: DependenciesManagerProtocol {
     var requestPublisherUpdateWasCall: Bool = false
     var removeWasCall: Bool = false
     var clearWasCall: Bool = false
-    
+    var getCurrentKeyWasCall: Bool = false
     
     func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String : () -> Abstraction?]) {
         registerManyImplementationsWasCall = true
@@ -50,7 +50,7 @@ class DependenciesManagerMock: DependenciesManagerProtocol {
         resetSingletonWasCall = true
     }
     
-    func get<Abstraction>(with injectionType: InjectionType) -> Abstraction? {
+    func get<Abstraction>(with injectionType: InjectionType, key: String?) -> Abstraction? {
         getWasCall = true
         return nil
     }
@@ -70,5 +70,10 @@ class DependenciesManagerMock: DependenciesManagerProtocol {
     
     func clear() {
         clearWasCall = true
+    }
+    
+    func getCurrentKey<Abstraction>(of abstraction: Abstraction.Type) -> String? {
+        getCurrentKeyWasCall = true
+        return "mock"
     }
 }

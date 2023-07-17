@@ -35,7 +35,7 @@ Once you have your Swift package set up, adding swift-dependency-injector as a d
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "1.2.0"))
+    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "1.3.0"))
 ]
 ```
 
@@ -417,6 +417,14 @@ And to use **singleton** injection type and **regular** instantiation type we ca
 @Injectable(injection: .singleton, instantiation: .regular) 
 private var repository: Repository?
 ```
+
+Finally, we have a third argument to build an injectable property. The **'constrainedTo:'** property allow us to constraint the injection to a specific key. This means the injector will search into the container with the given key ignoring the key settled globally in the current context.
+
+```swift
+@Injectable(constrainedTo: RepositoryType.remote.rawValue)
+private var repository: Repository?
+```
+
 ---
 **NOTE**
 

@@ -16,7 +16,7 @@ class DependenciesManagerTests: XCTestCase {
     
     override func setUpWithError() throws {
         let targetValidatorMock = TargetValidatorMock(value: false)
-        sut = DependenciesManager(targetValidator: targetValidatorMock)
+        sut = DependenciesManager(targetValidator: targetValidatorMock, context: .global)
     }
     
     override func tearDownWithError() throws {
@@ -216,6 +216,16 @@ class DependenciesManagerTests: XCTestCase {
         XCTAssertEqual(result1, result2)
     }
     
+    func testGetDependencyWithConstraintKey() {
+        sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
+            DummyDependencyType.first : DummyDependencyOneMock.instance,
+            DummyDependencyType.second : DummyDependencyTwoMock.instance
+        ])
+        
+        let result: DummyDependencyMockProtocol? = sut.get(with: .regular, key: DummyDependencyType.second)
+        XCTAssertNotNil(result as? DummyDependencyTwoMock)
+    }
+    
     func testGetPublisher() {
         sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
         
@@ -269,5 +279,17 @@ class DependenciesManagerTests: XCTestCase {
         let result = sut.container.count
         
         XCTAssertEqual(result, 0)
+    }
+    
+    func testGetCurrentKey() {
+        sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
+            DummyDependencyType.first : DummyDependencyOneMock.instance,
+            DummyDependencyType.second : DummyDependencyTwoMock.instance
+        ])
+        
+        let expected = DummyDependencyType.first
+        
+        let result = sut.getCurrentKey(of: DummyDependencyMockProtocol.self)
+        XCTAssertEqual(result, expected)
     }
 }
