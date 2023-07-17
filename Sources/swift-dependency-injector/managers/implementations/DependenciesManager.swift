@@ -266,4 +266,12 @@ final class DependenciesManager: DependenciesManagerProtocol {
         container.removeAll()
         Logger.log("All registered abstractions and implementations were removed successfully from container")
     }
+    
+    /// To get the key that is being use to inject dependencies of a specific abstraction.
+    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
+    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
+    func getCurrentKey<Abstraction>(of abstraction: Abstraction.Type) -> String? {
+        let abstractionName = Utils.createName(for: abstraction)
+        return container[abstractionName]?.currentKey
+    }
 }

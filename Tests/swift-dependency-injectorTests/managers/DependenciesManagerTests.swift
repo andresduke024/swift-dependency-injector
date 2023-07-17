@@ -270,4 +270,16 @@ class DependenciesManagerTests: XCTestCase {
         
         XCTAssertEqual(result, 0)
     }
+    
+    func testGetCurrentKey() {
+        sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
+            DummyDependencyType.first : DummyDependencyOneMock.instance,
+            DummyDependencyType.second : DummyDependencyTwoMock.instance
+        ])
+        
+        let expected = DummyDependencyType.first
+        
+        let result = sut.getCurrentKey(of: DummyDependencyMockProtocol.self)
+        XCTAssertEqual(result, expected)
+    }
 }

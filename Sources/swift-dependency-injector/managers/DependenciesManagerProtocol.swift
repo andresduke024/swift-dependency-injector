@@ -72,4 +72,9 @@ protocol DependenciesManagerProtocol {
     
     /// To remove all the registered abstractions and implementations.
     func clear()
+    
+    /// To get the key that is being use to inject dependencies of a specific abstraction.
+    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
+    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
+    func getCurrentKey<Abstraction>(of abstraction: Abstraction.Type) -> String?
 }

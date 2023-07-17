@@ -91,4 +91,13 @@ final class InjectorTest: XCTestCase {
         let result = contextManagerMock.removeWassCall
         XCTAssertTrue(result)
     }
+    
+    func testGetCurrentKey() {
+        let expectedName = "mock"
+        let name = sut.getCurrentKey(of: DummyDependencyMockProtocol.self)
+        
+        let result = contextManagerMock.dependenciesManager.getCurrentKeyWasCall
+        XCTAssertTrue(result)
+        XCTAssertEqual(name, expectedName)
+    }
 }
