@@ -1,0 +1,29 @@
+opt_in_rules:
+  - control_statement
+  - empty_count
+  - trailing_newline
+  - colon
+  - comma
+included:
+  - Sources
+excluded:
+  - Tests
+
+line_length:
+  ignores_comments: true
+  warning: 150
+  error: 160
+
+type_body_length:
+  - 300 # warning
+  - 400 # error
+
+file_length:
+  warning: 500
+  error: 600
+   
+identifier_name:
+  min_length: 2
+  max_length:
+    warning: 50
+    error: 60

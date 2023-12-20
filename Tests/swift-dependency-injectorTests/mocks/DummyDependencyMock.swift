@@ -27,7 +27,7 @@ extension DummyDependencyMockProtocol {
 
 final class DummyDependencyOneMock: DummyDependencyMockProtocol, InjectableDependency {
     required init() {}
-    
+
     func sayHello() {
         print("Hello from first dummy dependency")
     }
@@ -35,7 +35,7 @@ final class DummyDependencyOneMock: DummyDependencyMockProtocol, InjectableDepen
 
 final class DummyDependencyTwoMock: DummyDependencyMockProtocol, InjectableDependency {
     required init() {}
-    
+
     func sayHello() {
         print("Hello from second dummy dependency")
     }
@@ -43,7 +43,7 @@ final class DummyDependencyTwoMock: DummyDependencyMockProtocol, InjectableDepen
 
 final class DummyDependencyThreeMock: DummyDependencyMockProtocol, InjectableDependency {
     required init() {}
-    
+
     func sayHello() {
         print("Hello from third dummy dependency")
     }
@@ -51,11 +51,10 @@ final class DummyDependencyThreeMock: DummyDependencyMockProtocol, InjectableDep
 
 final class DummyDependencyFourMock: DummyDependencyMockProtocol, InjectableDependency {
     required init() {}
-    
+
     func sayHello() {
         print("Hello from fourth dummy dependency")
     }
 }
 
 final class DummyDependency {}
-

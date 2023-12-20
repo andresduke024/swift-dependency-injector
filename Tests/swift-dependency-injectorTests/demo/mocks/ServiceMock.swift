@@ -10,12 +10,12 @@ import Foundation
 
 class ServiceSuccessMock: Service, InjectableDependency {
     required init() {}
-    
-    func getData() -> [Int] { [1,2,3,4] }
+
+    func getData() -> [Int] { [1, 2, 3, 4] }
 }
 
 class ServiceFailMock: Service, InjectableDependency {
     required init() {}
-    
+
     func getData() -> [Int] { [] }
 }

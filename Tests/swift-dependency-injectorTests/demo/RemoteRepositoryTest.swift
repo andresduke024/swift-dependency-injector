@@ -10,20 +10,20 @@ import XCTest
 
 final class RemoteRepositoryTest: XCTestCase {
     private var sut: RemoteRepository!
-    
+
     override func setUp() {
         sut = RemoteRepository()
     }
-    
+
     override func tearDown() {
         sut = nil
     }
-    
+
     func testFetchData() throws {
-        let expected = [5,6,7,8]
-        
+        let expected = [5, 6, 7, 8]
+
         let result = sut.fetch()
-        
+
         XCTAssertEqual(result, expected)
     }
 }

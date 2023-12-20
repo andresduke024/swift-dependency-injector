@@ -9,7 +9,7 @@ let package = Package(
     products: [
         .library(
             name: "SwiftDependencyInjector",
-            targets: ["swift-dependency-injector"]),
+            targets: ["swift-dependency-injector"])
     ],
     dependencies: [],
     targets: [
@@ -18,6 +18,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "swift-dependency-injectorTests",
-            dependencies: ["swift-dependency-injector"]),
+            dependencies: ["swift-dependency-injector"])
     ]
 )

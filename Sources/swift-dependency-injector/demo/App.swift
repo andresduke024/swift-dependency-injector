@@ -11,7 +11,7 @@ class App {
     init() {
         ApplicationSetup.start()
     }
-    
+
     func main() -> [Int] {
         let viewModel = ViewModel()
         viewModel.loadData()
