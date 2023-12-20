@@ -12,15 +12,15 @@ final class AbstractionMapperTest: XCTestCase {
     func testMapSuccess() {
         let dependencyMock = DummyDependencyOneMock()
         let mock = dependencyMock as AnyObject
-        
+
         let result: DummyDependencyMockProtocol? = AbstractionMapper.map(mock)
         XCTAssertNotNil(result)
     }
-    
+
     func testMapFail() {
         let dependencyMock = DummyDependency()
         let mock = dependencyMock as AnyObject
-        
+
         let result: DummyDependencyMockProtocol? = AbstractionMapper.map(mock)
         XCTAssertNil(result)
     }

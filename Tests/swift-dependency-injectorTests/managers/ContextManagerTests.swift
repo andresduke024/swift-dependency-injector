@@ -16,112 +16,112 @@ class ContextManagerTests: XCTestCase {
         targetValidatorMock = TargetValidatorMock(value: true)
         sut = ContextManager(targetValidator: targetValidatorMock)
     }
-    
+
     override func tearDownWithError() throws {
         targetValidatorMock = nil
         sut = nil
     }
-    
+
     func testRegisterContext() {
-        let _ = sut.register(.global)
-        
+        _ = sut.register(.global)
+
         XCTAssertEqual(sut.count, 1)
     }
-    
+
     func testRegisterMultipleContexts() {
-        let _ = sut.register(.global)
-        let _ = sut.register(.custom(name: ""))
-        
+        _ = sut.register(.global)
+        _ = sut.register(.custom(name: ""))
+
         XCTAssertEqual(sut.count, 2)
     }
-    
+
     func testGetRegisteredDependenciesManager() {
-        let _ = sut.register(.global)
-        let _ = sut.get(.global)
-        
+        _ = sut.register(.global)
+        _ = sut.get(.global)
+
         XCTAssertEqual(sut.count, 1)
     }
-    
+
     func testGetDependenciesManager() {
-        let _ = sut.get(.global)
-        
+        _ = sut.get(.global)
+
         XCTAssertEqual(sut.count, 1)
     }
-    
+
     func testGetDependenciesManagerForDifferenteContexts() {
-        let _ = sut.get(.global)
-        let _ = sut.get(.custom(name: ""))
-        
+        _ = sut.get(.global)
+        _ = sut.get(.custom(name: ""))
+
         XCTAssertEqual(sut.count, 2)
     }
-    
+
     func testRemoveRegisteredContext() {
-        let _ = sut.register(.global)
+        _ = sut.register(.global)
         sut.remove(.global)
-        
+
         XCTAssertEqual(sut.count, 0)
     }
-    
+
     func testRemoveUndefinedContext() {
-        let _ = sut.get(.global)
+        _ = sut.get(.global)
         sut.remove(.custom(name: ""))
-        
+
         XCTAssertEqual(sut.count, 1)
     }
-    
+
     func testTransformToValidContextShouldReturnGlobalContextWithoutRunningOnTestTarget() {
         let mockFileName = "TestFile"
         targetValidatorMock.value = false
-        let context = sut.transformToValidContext(.global, fileName: mockFileName)
-        
+        let context = sut.transformToValidContext(.global, file: mockFileName)
+
         var result = false
         if case .global = context {
             result = true
         }
-        
+
         XCTAssert(result)
     }
-    
+
     func testTransformToValidContextShouldReturnGlobalContext() {
         let mockFileName = "TestFile"
         targetValidatorMock.value = true
-        let context = sut.transformToValidContext(.global, fileName: mockFileName)
-        
+        let context = sut.transformToValidContext(.global, file: mockFileName)
+
         var result = false
         if case .global = context {
             result = true
         }
-        
+
         XCTAssert(result)
     }
-    
+
     func testTransformToValidContextShouldReturnTestsContext() {
         let mockFileName = "TestFile"
         targetValidatorMock.value = true
-        
-        let _ = sut.register(.tests(name: mockFileName))
-        let context = sut.transformToValidContext(.global, fileName: mockFileName)
-        
+
+        _ = sut.register(.tests(name: mockFileName))
+        let context = sut.transformToValidContext(.global, file: mockFileName)
+
         var result = false
         if case .tests(let name) = context, name == mockFileName {
             result = true
         }
-        
+
         XCTAssert(result)
     }
-    
+
     func testTransformToValidContextShouldReturnCustomContext() {
         let mockFileName = "TestFile"
         targetValidatorMock.value = true
-        
-        let _ = sut.register(.custom(name: ""))
-        let context = sut.transformToValidContext(.custom(name: ""), fileName: mockFileName)
-        
+
+        _ = sut.register(.custom(name: ""))
+        let context = sut.transformToValidContext(.custom(name: ""), file: mockFileName)
+
         var result = false
         if case .custom(let name) = context, name == "" {
             result = true
         }
-        
+
         XCTAssert(result)
     }
 }

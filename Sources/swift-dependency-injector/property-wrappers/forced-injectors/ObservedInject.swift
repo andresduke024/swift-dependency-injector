@@ -1,23 +1,38 @@
 //
-//  ObservedInjectable.swift
+//  ObservedInject.swift
 //  
 //
-//  Created by Andres Duque on 13/07/23.
+//  Created by Andres Duque on 19/12/23.
 //
 
 import Foundation
 
 /// The property wrapper used to mark a property as an injectable dependency which can be replaced at runtime several times.
 /// Generic value: <Abstraction> used to define the abstraction that encapsulates the injected implemententations.
+///
+/// This property wrapper avoid usage of optional abstractions but can throw a fatal error
+/// if the corresponding implementation haven't been registered.
 @propertyWrapper
-public struct ObservedInjectable<Abstraction> {
+public struct ObservedInject<Abstraction> {
+
+    /// To store the current injection context
+    private let context: InjectionContext
 
     /// A wrapper that will manage the whole lyfecycle of the injected implementations.
     private let dependency: DependencyWrapper<Abstraction>
 
     /// To obtain the specific implementation injected when we access to the property from outside.
-    public var wrappedValue: Abstraction? { dependency.unwrapValue() }
-    
+    ///
+    /// A fatal error would be thrown if the specific implementation is not stored in the dependency container.
+    public var wrappedValue: Abstraction {
+        if let instance = dependency.unwrapValue() {
+            return instance
+        }
+
+        let error: InjectionErrors = .forcedInjectionFail("\(Abstraction.self)", context: context, safePropertyEquivalent: "@ObservedInjectable")
+        fatalError(error.message)
+    }
+
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor
     /// - Parameters:
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
@@ -28,7 +43,8 @@ public struct ObservedInjectable<Abstraction> {
         _ line: Int = #line,
         context: InjectionContext = .global
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, fileName: Utils.extractFileName(of: file, withExtension: false))
+        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
         self.dependency = ObservedDependencyWrapper(file, line, realContext)
+        self.context = realContext
     }
 }

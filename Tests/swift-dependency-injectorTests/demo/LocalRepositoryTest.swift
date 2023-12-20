@@ -10,20 +10,20 @@ import XCTest
 
 final class LocalRepositoryTest: XCTestCase {
     private var sut: LocalRepository!
-    
+
     override func setUp() {
         sut = LocalRepository()
     }
-    
+
     override func tearDown() {
         sut = nil
     }
-    
+
     func testFetchData() throws {
-        let expected = [1,2,3,4]
-        
+        let expected = [1, 2, 3, 4]
+
         let result = sut.fetch()
-        
+
         XCTAssertEqual(result, expected)
     }
 }

@@ -13,10 +13,10 @@ protocol NetworkManager {
 
 class DummyNetworkManager: NetworkManager, InjectableDependency {
     required init() {}
-    
+
     func validateConnection() {
         let isNetworkAvailable = Bool.random()
-        
+
         let repositoryImplementation: RepositoryType = isNetworkAvailable ? .remote : .local
         Injector.global.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
     }

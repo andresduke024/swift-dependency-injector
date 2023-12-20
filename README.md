@@ -17,6 +17,8 @@ A native dependency container written in swift that manages the initialization, 
     - Injector
     - @Injectable
     - @ObservedInjectable
+    - @Inject
+    - @ObservedInject
     - Injection contexts
     - Injection errors
     - Injection types
@@ -74,6 +76,14 @@ class RemoteRepository: Repository, InjectableDependency {
 ```
 
 Notice that both classes implements the Injectable Dependency protocol too. This protocol defines a default property that give us a contract to access to an instance of the class. We will use this property later.
+
+It is a valid option to implement the "InjectableDependency" protocol directly in the base abstraction.
+
+```swift
+protocol Repository: InjectableDependency {
+    func fetch() -> [Int]
+}
+```
 
 We can define an enum to identify the types of **Repository** that we will use in our app, but this is optional.
 
@@ -382,6 +392,8 @@ func destroy() {}
 The property wrapper used to mark a property as an injectable dependency.
 It use a generic value to define the abstraction that encapsulates the injected implemententations.
 
+The abstraction defined for this property wrapper has to be an **optional type**. This to achieve a safe injection. If there is no valid implementation registered in the dependency container, the value wrapped by this property will be null.
+
 All the dependencies injected by using this property wrapper has two different ways of be injected (**InjectionType**).
 
 - **regular**: 
@@ -446,6 +458,8 @@ private var repository: Repository?
 The property wrapper used to mark a property as an injectable dependency which can be replaced at runtime several times.
 It use a generic value to define the abstraction that encapsulates the injected implemententations.
 
+The abstraction defined for this property wrapper has to be an **optional type**. This to achieve a safe injection. If there is no valid implementation registered in the dependency container, the value wrapped by this property will be null.
+
 ```swift
 @ObservedInjectable private var repository: Repository?
 ```
@@ -476,6 +490,24 @@ Unlike **@Injectable** this property wrapper doesn't expose the options to selec
 This means that all properties wrapped with **@ObservedInjectable** will be create with and injection type and an instantion type **regular**
 
 ---
+
+## @Inject
+
+This property wrapper have the same behavior of '@Injectable' but in this case with don't need to defined the abstraction as an **optional type**. If we do this we are taking for granted that an implementation is already registered into the container. In case that no implementation were registered into the container we will face a "Fatal Error" throwed in our app.
+
+```swift
+@Inject private var repository: Repository
+```
+
+---
+
+## @ObservedInject
+
+This property wrapper have the same behavior of '@ObservedInjectable' but in this case with don't need to defined the abstraction as an **optional type**. If we do this we are taking for granted that an implementation is already registered into the container. In case that no implementation were registered into the container we will face a "Fatal Error" throwed in our app.
+
+```swift
+@ObservedInject private var repository: Repository
+```
 
 ---
 **NOTES**
@@ -563,6 +595,10 @@ When the container can't find a dependency in the context it will return nil. It
 
 - **EqualDependecyKeyOnUpdate**:
     - When in the attempt to update the default dependency key of a specific abstraction the key thats already stored is equal to the new key.
+    
+- **ForcedInjectionFail**:
+    - When no registered abstraction was founded in the container with the given type and it was requested from a forced injection. 
+    - It produces a fatal error (Application crash).
 
 ## Injection types
 
