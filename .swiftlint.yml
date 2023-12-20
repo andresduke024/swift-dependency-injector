@@ -1,43 +1,29 @@
-disabled_rules: # rule identifiers to exclude from running
-  - identifier_name
-  - nesting
-  - function_parameter_count
-opt_in_rules: # some rules are only opt-in
+opt_in_rules:
   - control_statement
   - empty_count
   - trailing_newline
   - colon
   - comma
-included: # paths to include during linting. `--path` is ignored if present.
+included:
   - Sources
-excluded: # paths to ignore during linting. Takes precedence over `included`.
+excluded:
   - Tests
-
-# configurable rules can be customized from this configuration file
-# binary rules can set their severity level
-force_cast: warning # implicitly. Give warning only for force casting
 
 line_length:
   ignores_comments: true
   warning: 150
   error: 160
 
-force_try:
-  severity: warning # explicitly. Give warning only for force try
-
 type_body_length:
   - 300 # warning
   - 400 # error
 
-# or they can set both explicitly
 file_length:
   warning: 500
   error: 600
    
-# naming rules can set warnings/errors for min_length and max_length
-# additionally they can set excluded names
 identifier_name:
-  min_length: 4 # only warning
-  max_length: # warning and error
-    warning: 30
-    error: 35
+  min_length: 2
+  max_length:
+    warning: 50
+    error: 60
