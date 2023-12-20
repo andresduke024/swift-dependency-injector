@@ -17,7 +17,7 @@ public struct Injectable<Abstraction> {
 
     /// To obtain the specific implementation injected when we access to the property from outside.
     public var wrappedValue: Abstraction? { dependency.unwrapValue() }
-    
+
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor.
     /// - Parameters:
     ///   - injectionType: To define the injection type used to instantiate the dependency.
@@ -34,7 +34,7 @@ public struct Injectable<Abstraction> {
         context: InjectionContext = .global,
         constrainedTo key: String? = nil
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, fileName: Utils.extractFileName(of: file, withExtension: false))
+        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
         self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line, realContext, constrainedTo: key)
     }
 }

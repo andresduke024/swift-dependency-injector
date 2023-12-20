@@ -18,12 +18,12 @@ protocol Repository {
 
 class LocalRepository: Repository, InjectableDependency {
     required init() {}
-    
+
     func fetch() -> [Int] { [1, 2, 3, 4] }
 }
 
 class RemoteRepository: Repository, InjectableDependency {
     required init() {}
-    
+
     func fetch() -> [Int] { [5, 6, 7, 8] }
 }

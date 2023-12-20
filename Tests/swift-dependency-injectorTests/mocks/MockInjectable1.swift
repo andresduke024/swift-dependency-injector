@@ -10,6 +10,6 @@ import Foundation
 
 final class MockInjectable1: MockInjectableProtocol {
     static let key: String = "1"
-    
+
     func getMockData() -> String { "mock_data_1" }
 }

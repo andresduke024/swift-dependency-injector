@@ -14,9 +14,9 @@ protocol Service {
 class DummyService: Service, InjectableDependency {
     @ObservedInjectable
     private var repository: Repository?
-    
+
     required init() {}
-    
+
     func getData() -> [Int] {
         repository?.fetch() ?? []
     }

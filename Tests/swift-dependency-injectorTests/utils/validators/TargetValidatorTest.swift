@@ -11,7 +11,7 @@ import XCTest
 final class TargetValidatorTest: XCTestCase {
 
     private var sut: TargetValidator!
-    
+
     override func setUpWithError() throws {
         sut = TargetValidator()
     }
@@ -24,7 +24,7 @@ final class TargetValidatorTest: XCTestCase {
         let result = sut.isRunningOnTestTarget
         XCTAssertTrue(result)
     }
-    
+
     func testCopy() throws {
         let result = sut.copy()
         XCTAssertNotNil(result)

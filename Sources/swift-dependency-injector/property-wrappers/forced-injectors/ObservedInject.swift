@@ -17,7 +17,7 @@ public struct ObservedInject<Abstraction> {
 
     /// To store the current injection context
     private let context: InjectionContext
-    
+
     /// A wrapper that will manage the whole lyfecycle of the injected implementations.
     private let dependency: DependencyWrapper<Abstraction>
 
@@ -32,7 +32,7 @@ public struct ObservedInject<Abstraction> {
         let error: InjectionErrors = .forcedInjectionFail("\(Abstraction.self)", context: context, safePropertyEquivalent: "@ObservedInjectable")
         fatalError(error.message)
     }
-    
+
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor
     /// - Parameters:
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
@@ -43,7 +43,7 @@ public struct ObservedInject<Abstraction> {
         _ line: Int = #line,
         context: InjectionContext = .global
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, fileName: Utils.extractFileName(of: file, withExtension: false))
+        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
         self.dependency = ObservedDependencyWrapper(file, line, realContext)
         self.context = realContext
     }

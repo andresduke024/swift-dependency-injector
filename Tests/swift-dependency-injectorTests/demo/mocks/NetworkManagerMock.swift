@@ -10,6 +10,6 @@ import Foundation
 
 class NetworkManagerMock: NetworkManager, InjectableDependency {
     required init() {}
-    
+
     func validateConnection() {}
 }
