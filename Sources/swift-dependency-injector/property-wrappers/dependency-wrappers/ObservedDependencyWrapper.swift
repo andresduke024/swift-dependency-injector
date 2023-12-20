@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-/// Manage the lifecycle of an Abstraction that will be injected using the @ObservedInjectable property wrapper
+/// Manage the lifecycle of an Abstraction that will be injected using the @ObservedInjectable/@ObservedInject property wrapper
 final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction> {
     
     /// To store the subscription to the abstraction's publisher
@@ -17,8 +17,16 @@ final class ObservedDependencyWrapper<Abstraction>: DependencyWrapper<Abstractio
     /// To identify this wrapper as an unique subscriber
     private let id: String
     
-    init(_ filePath: String, _ line: Int, _ context: InjectionContext) {
-        self.id = String.join(Utils.extractFileName(of: filePath, withExtension: false), Utils.createName(for: Abstraction.self), UUID().uuidString, separator: ":")
+    init(
+        _ filePath: String,
+        _ line: Int,
+        _ context: InjectionContext
+    ) {
+        let fileName = Utils.extractFileName(of: filePath, withExtension: false)
+        let abstractionName = Utils.createName(for: Abstraction.self)
+        let generatedId = UUID().uuidString
+        
+        self.id = String.join(fileName, abstractionName, generatedId, separator: ":")
         super.init(filePath, line, context)
         subscribeToDependencyPublisher()
         manageOnInitInstantiation()

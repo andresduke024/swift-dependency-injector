@@ -11,12 +11,15 @@ import Combine
 /// This class manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations.
 final class DependenciesManager: DependenciesManagerProtocol {
     
-    /// To perform validation about the current target 
+    /// To perform validation about the current target
     private var targetValidator: TargetValidatorProtocol
     
     private let context: InjectionContext
     
-    init(targetValidator: TargetValidatorProtocol, context: InjectionContext) {
+    init(
+        targetValidator: TargetValidatorProtocol,
+        context: InjectionContext
+    ) {
         self.targetValidator = targetValidator
         self.context = context
     }

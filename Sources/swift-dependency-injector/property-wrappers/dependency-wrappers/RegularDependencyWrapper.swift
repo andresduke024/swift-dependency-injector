@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Manage the lifecycle of an Abstraction that will be injected using the @Injectable property wrapper.
+/// Manage the lifecycle of an Abstraction that will be injected using the @Injectable/@Inject property wrapper.
 final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction> {
     
     /// To define the type of injection that we will use when try to get an implementation from the container.
@@ -16,7 +16,14 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
     ///To define at which point the implementation will be instantiated.
     private let instantiationType: InstantiationType
         
-    init(_ injectionType: InjectionType, _ instantiationType: InstantiationType, _ filePath: String, _ line: Int, _ context: InjectionContext, constrainedTo key: String? = nil) {
+    init(
+        _ injectionType: InjectionType,
+        _ instantiationType: InstantiationType,
+        _ filePath: String,
+        _ line: Int,
+        _ context: InjectionContext,
+        constrainedTo key: String? = nil
+    ) {
         self.injectionType = injectionType
         self.instantiationType = instantiationType
         super.init(filePath, line, context, constrainedTo: key)

@@ -32,13 +32,25 @@ final class ImplementationsContainer {
     /// The publisher that will send the new implementations to the subscribed injectors.
     let publisher = PassthroughSubject<ImplementationWrapper, InjectionErrors>()
     
-    init(abstraction: String, currentKey: String, implementations: InitializersContainer) {
-        self.abstractionName = abstraction
-        self.currentKey = currentKey
-        self.implementations = implementations
+    convenience init(
+        abstraction: String,
+        currentKey: String,
+        implementations: InitializersContainer
+    ) {
+        self.init(
+            abstraction: abstraction,
+            currentKey: currentKey,
+            implementations: implementations,
+            singletonsContainer: [:]
+        )
     }
     
-    private init(abstraction: String, currentKey: String, implementations: InitializersContainer, singletonsContainer: [String: AnyObject?]) {
+    private init(
+        abstraction: String,
+        currentKey: String,
+        implementations: InitializersContainer,
+        singletonsContainer: [String: AnyObject?]
+    ) {
         self.abstractionName = abstraction
         self.currentKey = currentKey
         self.implementations = implementations

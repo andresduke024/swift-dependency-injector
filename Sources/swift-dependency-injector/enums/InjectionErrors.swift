@@ -38,6 +38,10 @@ enum InjectionErrors: Error {
     /// When in the attempt to update the default dependency key of a specific abstraction the key thats already stored is equal to the new key.
     case equalDependecyKeyOnUpdate(_ abstractionName: String, _ key: String)
     
+    /// When no registered abstraction was founded in the container with the given type and it was requested from a forced injection.
+    /// It produces a fatal error (Application crash).
+    case forcedInjectionFail(_ abstractionName: String, context: InjectionContext, safePropertyEquivalent: String? = nil)
+    
     /// A computed property to obtain a specific error message based on the current case.
     var message: String {
         switch self {
@@ -59,6 +63,13 @@ enum InjectionErrors: Error {
             return "No registered implementation found for '\(abstractionName)' abstraction. Publish could not be completed."
         case .equalDependecyKeyOnUpdate(let abstractionName, let key):
             return "The dependency key '\(key)' for '\(abstractionName)' abstraction is already stored. Try to set a new one to make real changes to the injected implementations."
+        case .forcedInjectionFail(let abstractionName, let context, let safePropertyEquivalent):
+            let baseMessage = "No implementation found for abstraction of type \(abstractionName) in context with identifier \(context.description)."
+            let safePropertyEquivalentMessage = "Use \(safePropertyEquivalent ?? "") instead if a you want to achieve an optional dependency injection."
+            
+            return safePropertyEquivalent == nil
+                ? baseMessage
+                : "\(baseMessage) \(safePropertyEquivalentMessage)"
         }
     }
     
@@ -83,6 +94,8 @@ enum InjectionErrors: Error {
             return "NoImplementationFoundForPublish"
         case .equalDependecyKeyOnUpdate:
             return "EqualDependecyKeyOnUpdate"
+        case .forcedInjectionFail:
+            return "ForcedInjectionFail"
         }
     }
 }
