@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "SwiftDependencyInjector"
-  spec.version      = "1.3.2"
+  spec.version      = "1.4.0"
   spec.summary      = "A native dependency container written in swift that manages dependency injection"
 
   spec.description  = <<-DESC
@@ -56,7 +56,7 @@ This CocoaPods library helps you to used dependency injection and inversion of c
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Sources/swift-dependency-injector/**/*"
+  spec.source_files  = "Sources/SwiftDependencyInjector/**/*"
   # spec.exclude_files = "Sources/Exclude"
 
 end
