@@ -9,15 +9,15 @@ let package = Package(
     products: [
         .library(
             name: "SwiftDependencyInjector",
-            targets: ["swift-dependency-injector"])
+            targets: ["SwiftDependencyInjector"])
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "swift-dependency-injector",
+            name: "SwiftDependencyInjector",
             dependencies: []),
         .testTarget(
-            name: "swift-dependency-injectorTests",
-            dependencies: ["swift-dependency-injector"])
+            name: "SwiftDependencyInjectorTests",
+            dependencies: ["SwiftDependencyInjector"])
     ]
 )
