@@ -9,14 +9,16 @@ import Foundation
 
 /// The property wrapper used to mark a property as an injectable dependency which can be replaced at runtime several times.
 /// Generic value: <Abstraction> used to define the abstraction that encapsulates the injected implemententations.
+///
+/// It needs <Abstraction> to be optional type.
 @propertyWrapper
 public struct ObservedInjectable<Abstraction> {
-
-    /// A wrapper that will manage the whole lyfecycle of the injected implementations.
-    private let dependency: DependencyWrapper<Abstraction>
+    
+    /// To resolve a concrete implementation of given abstraction.
+    private let resolver: SafeResolver<Abstraction>
 
     /// To obtain the specific implementation injected when we access to the property from outside.
-    public var wrappedValue: Abstraction? { dependency.unwrapValue() }
+    public var wrappedValue: Abstraction? { resolver.value }
 
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor
     /// - Parameters:
@@ -28,7 +30,11 @@ public struct ObservedInjectable<Abstraction> {
         _ line: Int = #line,
         context: InjectionContext = .global
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
-        self.dependency = ObservedDependencyWrapper(file, line, realContext)
+        self.resolver = SafeResolver(
+            type: .observed,
+            file: file,
+            line: line,
+            context: context
+        )
     }
 }

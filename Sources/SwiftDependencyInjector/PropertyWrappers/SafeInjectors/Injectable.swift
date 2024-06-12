@@ -9,14 +9,16 @@ import Foundation
 
 /// The property wrapper used to mark a property as an injectable dependency.
 /// Generic value: <Abstraction> used to define the abstraction that encapsulates the injected implemententations.
+///
+/// It needs <Abstraction> to be optional type.
 @propertyWrapper
 public struct Injectable<Abstraction> {
-
-    /// A wrapper that will manage the whole lyfecycle of the injected implementation.
-    private let dependency: DependencyWrapper<Abstraction>
+    
+    /// To resolve a concrete implementation of given abstraction.
+    private let resolver: SafeResolver<Abstraction>
 
     /// To obtain the specific implementation injected when we access to the property from outside.
-    public var wrappedValue: Abstraction? { dependency.unwrapValue() }
+    public var wrappedValue: Abstraction? { resolver.value }
 
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor.
     /// - Parameters:
@@ -34,7 +36,14 @@ public struct Injectable<Abstraction> {
         context: InjectionContext = .global,
         constrainedTo key: String? = nil
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
-        self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line, realContext, constrainedTo: key)
+        self.resolver = SafeResolver(
+            type: .regular,
+            injection: injectionType,
+            instantiation: instantiationType,
+            file: file,
+            line: line,
+            context: context,
+            constrainedTo: key
+        )
     }
 }

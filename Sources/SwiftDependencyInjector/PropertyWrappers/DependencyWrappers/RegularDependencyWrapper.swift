@@ -16,17 +16,10 @@ final class RegularDependencyWrapper<Abstraction>: DependencyWrapper<Abstraction
     /// To define at which point the implementation will be instantiated.
     private let instantiationType: InstantiationType
 
-    init(
-        _ injectionType: InjectionType,
-        _ instantiationType: InstantiationType,
-        _ filePath: String,
-        _ line: Int,
-        _ context: InjectionContext,
-        constrainedTo key: String? = nil
-    ) {
-        self.injectionType = injectionType
-        self.instantiationType = instantiationType
-        super.init(filePath, line, context, constrainedTo: key)
+    init(args: DependencyWrapperArgs) {
+        self.injectionType = args.injectionType
+        self.instantiationType = args.instantiationType
+        super.init(args.file, args.line, args.context, constrainedTo: args.key)
         manageOnInitInstantiation()
     }
 

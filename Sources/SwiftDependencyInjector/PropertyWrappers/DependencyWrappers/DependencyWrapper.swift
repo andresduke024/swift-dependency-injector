@@ -21,8 +21,10 @@ open class DependencyWrapper<Abstraction> {
     /// To store the current injected implementation.
     var value: Abstraction?
 
+    /// To store the dependency specific key in case if needs it
     var constraintKey: String?
 
+    /// To store the dependency specific context in case if needs it
     var context: InjectionContext
 
     init(

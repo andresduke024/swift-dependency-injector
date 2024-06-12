@@ -10,7 +10,7 @@ import Combine
 
 final class DependenciesContainer {
     static let defaultInstance: ContextManagerProtocol = ContextManager(targetValidator: TargetValidator())
-    static var global: ContextManagerProtocol = defaultInstance
+    static private(set) var global: ContextManagerProtocol = defaultInstance
 
     static func setContextManager(_ manager: ContextManagerProtocol) {
         self.global = manager
