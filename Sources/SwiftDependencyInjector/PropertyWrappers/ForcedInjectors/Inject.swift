@@ -15,22 +15,12 @@ import Foundation
 @propertyWrapper
 public struct Inject<Abstraction> {
 
-    /// To store the current injection context
-    private let context: InjectionContext
-
-    /// A wrapper that will manage the whole lyfecycle of the injected implementation.
-    private let dependency: DependencyWrapper<Abstraction>
+    /// To resolve a concrete implementation of given abstraction. Could throw fatal errors
+    private let resolver: ForcedResolver<Abstraction>
 
     /// To obtain the specific implementation injected when we access to the property from outside.
-    ///
-    /// A fatal error would be thrown if the specific implementation is not stored in the dependency container.
     public var wrappedValue: Abstraction {
-        if let instance = dependency.unwrapValue() {
-            return instance
-        }
-
-        let error: InjectionErrors = .forcedInjectionFail("\(Abstraction.self)", context: context, safePropertyEquivalent: "@Injectable")
-        fatalError(error.message)
+        resolver.value
     }
 
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor.
@@ -49,8 +39,14 @@ public struct Inject<Abstraction> {
         context: InjectionContext = .global,
         constrainedTo key: String? = nil
     ) {
-        let realContext = DependenciesContainer.global.transformToValidContext(context, file: file)
-        self.dependency = RegularDependencyWrapper(injectionType, instantiationType, file, line, realContext, constrainedTo: key)
-        self.context = realContext
+        self.resolver = ForcedResolver(
+            type: .regular,
+            injection: injectionType,
+            instantiation: instantiationType,
+            file: file,
+            line: line,
+            context: context,
+            constrainedTo: key
+        )
     }
 }

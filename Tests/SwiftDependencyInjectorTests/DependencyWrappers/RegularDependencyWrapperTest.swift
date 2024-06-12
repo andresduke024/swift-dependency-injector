@@ -23,15 +23,14 @@ final class RegularDependencyWrapperTest: XCTestCase {
 
     func testUnwrapValueRegular() {
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut = RegularDependencyWrapper<DummyDependencyMockProtocol>(.regular, .regular, #file, #line, injectionContext)
-
+        let sut = buildSut(.regular, .regular)
         let result = sut.unwrapValue()
         XCTAssertNotNil(result)
     }
 
     func testUnwrapValueLazy() {
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut = RegularDependencyWrapper<DummyDependencyMockProtocol>(.regular, .lazy, #file, #line, injectionContext)
+        let sut = buildSut(.regular, .lazy)
 
         let result = sut.unwrapValue()
         XCTAssertNotNil(result)
@@ -39,8 +38,8 @@ final class RegularDependencyWrapperTest: XCTestCase {
 
     func testUnwrapValueSingletonInstance() {
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut1 = RegularDependencyWrapper<DummyDependencyMockProtocol>(.singleton, .lazy, #file, #line, injectionContext)
-        let sut2 = RegularDependencyWrapper<DummyDependencyMockProtocol>(.singleton, .lazy, #file, #line, injectionContext)
+        let sut1 = buildSut(.singleton, .lazy)
+        let sut2 = buildSut(.singleton, .lazy)
 
         let result1 = sut1.unwrapValue()
         let result2 = sut2.unwrapValue()
@@ -52,8 +51,8 @@ final class RegularDependencyWrapperTest: XCTestCase {
 
     func testUnwrapValueRegularInstance() {
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut1 = RegularDependencyWrapper<DummyDependencyMockProtocol>(.regular, .lazy, #file, #line, injectionContext)
-        let sut2 = RegularDependencyWrapper<DummyDependencyMockProtocol>(.regular, .lazy, #file, #line, injectionContext)
+        let sut1 = buildSut(.regular, .lazy)
+        let sut2 = buildSut(.regular, .lazy)
 
         let result1 = sut1.unwrapValue()
         let result2 = sut2.unwrapValue()
@@ -61,5 +60,24 @@ final class RegularDependencyWrapperTest: XCTestCase {
         XCTAssertNotNil(result1)
         XCTAssertNotNil(result2)
         XCTAssertNotEqual(result1?.id, result2?.id)
+    }
+}
+
+extension RegularDependencyWrapperTest {
+    func buildSut(
+        _ injectionType: InjectionType,
+        _ instantationType: InstantiationType
+    ) -> RegularDependencyWrapper<DummyDependencyMockProtocol> {
+        
+        let args = DependencyWrapperArgs(
+            injection: injectionType,
+            instantiation: instantationType,
+            file: #file,
+            line: #line,
+            context: injectionContext,
+            constrainedTo: nil
+        )
+        
+        return RegularDependencyWrapper(args: args)
     }
 }

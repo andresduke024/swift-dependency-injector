@@ -24,7 +24,7 @@ final class ObservedDependencyWrapperTest: XCTestCase {
 
     func testUnwrapValue() {
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut = ObservedDependencyWrapper<DummyDependencyMockProtocol>(#file, #line, injectionContext)
+        let sut = buildSut()
 
         let result = sut.unwrapValue()
         XCTAssertNotNil(result)
@@ -36,7 +36,7 @@ final class ObservedDependencyWrapperTest: XCTestCase {
             DummyDependencyType.second: DummyDependencyTwoMock.instance
         ])
 
-        let sut = ObservedDependencyWrapper<DummyDependencyMockProtocol>(#file, #line, injectionContext)
+        let sut = buildSut()
 
         let result1 = sut.unwrapValue()
 
@@ -52,7 +52,8 @@ final class ObservedDependencyWrapperTest: XCTestCase {
     func testUnwrapValueWithErrorOnInit() {
         let newInjectionContext = InjectionContext.tests(name: "newContext")
         let injector = Injector.build(context: newInjectionContext)
-        let sut = ObservedDependencyWrapper<DummyDependencyMockProtocol>(#file, #line, newInjectionContext)
+        
+        let sut = buildSut()
 
         injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
 
@@ -67,10 +68,17 @@ final class ObservedDependencyWrapperTest: XCTestCase {
         let mockContextManager = ContextManagerMock()
         DependenciesContainer.setContextManager(mockContextManager)
 
-        let sut = ObservedDependencyWrapper<DummyDependencyMockProtocol>(#file, #line, injectionContext)
+        let sut = buildSut()
 
         mockContextManager.dependenciesManager.publisher.send(completion: .failure(.abstractionAlreadyRegistered("DummyDependencyMockProtocol", injectionContext)))
 
         XCTAssertNil(sut.value)
+    }
+}
+
+extension ObservedDependencyWrapperTest {
+    func buildSut(context: InjectionContext? = nil) -> ObservedDependencyWrapper<DummyDependencyMockProtocol> {
+        let args = DependencyWrapperArgs(context: context ?? injectionContext)
+        return ObservedDependencyWrapper(args: args)
     }
 }

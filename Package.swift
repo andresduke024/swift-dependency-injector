@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftDependencyInjector",
-    platforms: [.iOS(.v13), .macOS(.v10_15)],
+    platforms: [.iOS(.v13), .macOS(.v10_15), .watchOS(.v7)],
     products: [
         .library(
             name: "SwiftDependencyInjector",

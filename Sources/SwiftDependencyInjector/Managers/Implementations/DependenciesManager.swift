@@ -78,7 +78,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String,
         implementation initializer: @escaping () -> Abstraction?
     ) {
-        set(abstraction, registrationType: .update, implementation: initializer)
+        set(abstraction, registrationType: .update, key: key, implementation: initializer)
     }
 
     /// To register or update into the container a new abstraction and its corresponding implementations.
