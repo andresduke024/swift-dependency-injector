@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import Combine
 @testable import SwiftDependencyInjector
 
 class DependenciesManagerTests: XCTestCase {

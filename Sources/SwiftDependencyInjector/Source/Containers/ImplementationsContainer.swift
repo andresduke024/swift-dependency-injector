@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 /// To wrap the definition of a generic implementations container.
 typealias InitializersContainer = [String: () -> AnyObject?]
@@ -28,9 +27,6 @@ final class ImplementationsContainer {
 
     /// To get the current amount of stored implementations.
     var count: Int { implementations.count }
-
-    /// The publisher that will send the new implementations to the subscribed injectors.
-    let publisher = PassthroughSubject<ImplementationWrapper, InjectionErrors>()
 
     convenience init(
         abstraction: String,
@@ -78,37 +74,6 @@ final class ImplementationsContainer {
 
         singletons[key] = implementation
         return implementation
-    }
-
-    /// To set the new key that will be used to identify the specific implementation obtained with the 'get' method.
-    /// - Parameter newKey: A key to identify a specific implementation.
-    func setCurrentKey(_ newKey: String) {
-        guard currentKey != newKey else {
-            Logger.log(.equalDependecyKeyOnUpdate(abstractionName, newKey))
-            return
-        }
-
-        self.currentKey = newKey
-        Logger.log("The key '\(newKey)' was saved successfully for the new injections of '\(abstractionName)'")
-        publishImplementation()
-    }
-
-    /// To send a new implementation of the given abstraction to the subscribed injectors.
-    /// - Parameter subscriberId: An id that allow us to define if the implementation to be send has to be listenned just for one subscriber.
-    func publishImplementation(justFor subscriberId: String? = nil) {
-        guard let implementation = get(with: .regular) else {
-            Logger.log(.noImplementationFoundForPublish(abstractionName))
-            return
-        }
-
-        let implementationSubject = ImplementationWrapper(subscriberId: subscriberId, value: implementation)
-        publisher.send(implementationSubject)
-
-        if let subscriberId {
-            Logger.log("New implementation of '\(abstractionName)' was published succesfully to subscriber with id: \(subscriberId)")
-        } else {
-            Logger.log("New implementation of '\(abstractionName)' was published succesfully to all subscribers")
-        }
     }
 
     /// To remove an already created an stored instance from the singletons dictionary.

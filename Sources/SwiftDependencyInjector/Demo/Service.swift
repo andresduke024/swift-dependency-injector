@@ -12,7 +12,7 @@ protocol Service {
 }
 
 class DummyService: Service, InjectableDependency {
-    @ObservedInjectable
+    @Injectable
     private var repository: Repository?
 
     required init() {}

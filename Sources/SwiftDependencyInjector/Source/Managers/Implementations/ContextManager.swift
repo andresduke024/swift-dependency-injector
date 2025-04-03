@@ -14,12 +14,12 @@ final class ContextManager: ContextManagerProtocol {
     private var managers: [String: DependenciesManagerProtocol] = [:]
 
     /// To perform validations about the current running target.
-    private var targetValidator: TargetValidatorProtocol
+    private let targetValidator: TargetValidatorProtocol
 
     /// To know the amount of managers (contexts) registered.
     var count: Int { managers.count }
 
-    init(targetValidator: TargetValidatorProtocol) {
+    init(targetValidator: TargetValidatorProtocol = TargetValidator()) {
         self.targetValidator = targetValidator
     }
 

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 /// This class manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations.
 final class DependenciesManager: DependenciesManagerProtocol {
@@ -256,23 +255,6 @@ final class DependenciesManager: DependenciesManagerProtocol {
         update(abstractionName: abstractionName, implementations: implementations)
     }
 
-    /// To change the default implementation injected for a given abstraction by changing the key used in the container.
-    /// - Parameters:
-    ///   - abstraction: Generic type. The protocol (already registered) to the one we want to change the injected implementation.
-    ///   - newKey: A unique key that identifies the new implementation that will be injected by default.
-    func updateDependencyKey<Abstraction>(
-        of abstraction: Abstraction.Type,
-        newKey: String
-    ) {
-        let abstractionName = Utils.createName(for: abstraction)
-        guard let item = container[abstractionName] else {
-            Logger.log(.notAbstrationFound(abstractionName, context: context))
-            return
-        }
-
-        item.setCurrentKey(newKey)
-    }
-
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.
@@ -313,28 +295,6 @@ final class DependenciesManager: DependenciesManagerProtocol {
         return implementation
     }
 
-    /// To extract from the container the publisher that will send the new implementations to the subscribed injectors.
-    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency.
-    /// - Returns: A publisher to listen the new implementations released.
-    func getPublisher<Abstraction>(
-        of abstraction: Abstraction.Type
-    ) -> AnyPublisher<ImplementationWrapper, InjectionErrors>? {
-        let abstractionName = Utils.createName(for: abstraction)
-        return container[abstractionName]?.publisher.eraseToAnyPublisher()
-    }
-
-    /// To request the publish of a new implementation of the given abstraction.
-    /// - Parameters:
-    ///   - abstraction: Generic type. The protocol that was registered as dependency.
-    ///   - subscriber: An id to know if the publish will be released just for a specific subscriber or for all the subscribers.
-    func requestPublisherUpdate<Abstraction>(
-        of abstraction: Abstraction.Type,
-        subscriber: String? = nil
-    ) {
-        let abstractionName = Utils.createName(for: abstraction)
-        container[abstractionName]?.publishImplementation(justFor: subscriber)
-    }
-
     /// To remove all the registed implementations of a given abstraction and the abstraction itself.
     /// - Parameter abstraction: Generic type. The protocol that was registered as dependency.
     func remove<Abstraction>(
@@ -349,15 +309,5 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func clear() {
         container.removeAll()
         Logger.log("All registered abstractions and implementations were removed successfully from container")
-    }
-
-    /// To get the key that is being use to inject dependencies of a specific abstraction.
-    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
-    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
-    func getCurrentKey<Abstraction>(
-        of abstraction: Abstraction.Type
-    ) -> String? {
-        let abstractionName = Utils.createName(for: abstraction)
-        return container[abstractionName]?.currentKey
     }
 }

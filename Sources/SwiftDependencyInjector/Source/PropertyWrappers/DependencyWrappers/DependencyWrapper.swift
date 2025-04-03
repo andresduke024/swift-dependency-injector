@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 /// Base class used to encapsulate the common behavior of a dependency wrapper.
 /// **It should not be instantiate**

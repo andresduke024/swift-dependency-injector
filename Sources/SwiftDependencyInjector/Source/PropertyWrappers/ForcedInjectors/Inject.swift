@@ -40,7 +40,6 @@ public struct Inject<Abstraction> {
         constrainedTo key: String? = nil
     ) {
         self.resolver = ForcedResolver(
-            type: .regular,
             injection: injectionType,
             instantiation: instantiationType,
             file: file,

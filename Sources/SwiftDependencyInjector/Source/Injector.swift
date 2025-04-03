@@ -79,17 +79,6 @@ public struct Injector {
         DependenciesContainer.global.get(context).add(abstraction, key: key, implementation: implementation)
     }
 
-    /// To change the default implementation injected for a given abstraction by changing the key used in the container.
-    /// - Parameters:
-    ///   - abstraction: Generic type. The protocol (already registered) to the one we want to change the injected implementation.
-    ///   - newKey: A unique key that identifies the new implementation that will be injected by default.
-    public func updateDependencyKey<Abstraction>(
-        of abstraction: Abstraction.Type,
-        newKey: String
-    ) {
-        DependenciesContainer.global.get(context).updateDependencyKey(of: abstraction, newKey: newKey)
-    }
-
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.
@@ -133,15 +122,6 @@ public struct Injector {
     public func destroy() {
         DependenciesContainer.global.remove(context)
     }
-
-    /// To get the key that is being use to inject dependencies of a specific abstraction.
-    /// - Parameter abstraction: Generic type. The protocol that was registered as dependency
-    /// - Returns: The current key registered in the container or nil if the dependency is not registered in the current context.
-    public func getCurrentKey<Abstraction>(
-        of abstraction: Abstraction.Type
-    ) -> String? {
-        DependenciesContainer.global.get(context).getCurrentKey(of: abstraction)
-    }
     
     /// To safely get a previously injected abstraction
     ///
@@ -158,7 +138,6 @@ public struct Injector {
         constrainedTo key: String? = nil
     ) -> Abstraction? {
         let resolver: SafeResolver<Abstraction> = SafeResolver(
-            type: .regular,
             injection: injectionType,
             file: file,
             line: line,
@@ -184,7 +163,6 @@ public struct Injector {
         constrainedTo key: String? = nil
     ) -> Abstraction {
         let resolver: ForcedResolver<Abstraction> = ForcedResolver(
-            type: .regular,
             injection: injectionType,
             file: file,
             line: line,

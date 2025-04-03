@@ -37,7 +37,6 @@ public struct Injectable<Abstraction> {
         constrainedTo key: String? = nil
     ) {
         self.resolver = SafeResolver(
-            type: .regular,
             injection: injectionType,
             instantiation: instantiationType,
             file: file,
