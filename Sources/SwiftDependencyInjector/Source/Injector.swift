@@ -1,5 +1,5 @@
 //
-//  Logger.swift
+//  Injector.swift
 //
 //
 //  Created by Andres Duque on 5/07/23.
@@ -28,6 +28,10 @@ public struct Injector: Sendable {
     ) {
         self.context = injectionContext
     }
+    
+    private var dependenciesManager: DependenciesManagerProtocol {
+        DependenciesContainer.global.get(context)
+    }
 
     /// To register into the dependencies container a new abstraction and its corresponding implementations.
     /// - Parameters:
@@ -39,7 +43,7 @@ public struct Injector: Sendable {
         defaultDependency: String,
         implementations: [String: @Sendable () -> Abstraction?]
     ) {
-        DependenciesContainer.global.get(context).register(abstraction, defaultDependency: defaultDependency, implementations: implementations)
+        dependenciesManager.register(abstraction, defaultDependency: defaultDependency, implementations: implementations)
     }
 
     /// To register into the dependencies container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction).
@@ -52,7 +56,7 @@ public struct Injector: Sendable {
         key: String = "",
         implementation: @Sendable @escaping () -> Abstraction?
     ) {
-        DependenciesContainer.global.get(context).register(abstraction, key: key, implementation: implementation)
+        dependenciesManager.register(abstraction, key: key, implementation: implementation)
     }
 
     /// To add into the container a new set of implementations of an already registered abstraction.
@@ -63,7 +67,7 @@ public struct Injector: Sendable {
         _ abstraction: Abstraction.Type,
         implementations: [String: @Sendable () -> Abstraction?]
     ) {
-        DependenciesContainer.global.get(context).add(abstraction, implementations: implementations)
+        dependenciesManager.add(abstraction, implementations: implementations)
     }
 
     /// To add into the container a new implementation of an already registered abstraction.
@@ -76,7 +80,7 @@ public struct Injector: Sendable {
         key: String,
         implementation: @Sendable @escaping () -> Abstraction?
     ) {
-        DependenciesContainer.global.get(context).add(abstraction, key: key, implementation: implementation)
+        dependenciesManager.add(abstraction, key: key, implementation: implementation)
     }
 
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
@@ -87,7 +91,7 @@ public struct Injector: Sendable {
         of abstraction: Abstraction.Type,
         key: String? = nil
     ) {
-        DependenciesContainer.global.get(context).resetSingleton(of: abstraction, key: key)
+        dependenciesManager.resetSingleton(of: abstraction, key: key)
     }
 
     /// To remove all the registed implementations of a given abstraction and the abstraction itself.
@@ -95,12 +99,12 @@ public struct Injector: Sendable {
     public func remove<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type
     ) {
-        DependenciesContainer.global.get(context).remove(abstraction)
+        dependenciesManager.remove(abstraction)
     }
 
     /// To remove all the registered abstractions and implementations.
     public func clear() {
-        DependenciesContainer.global.get(context).clear()
+        dependenciesManager.clear()
     }
 
     /// To turn off the messages logged by the injector.
