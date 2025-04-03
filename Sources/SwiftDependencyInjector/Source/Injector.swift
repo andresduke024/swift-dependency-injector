@@ -119,14 +119,14 @@ public struct Injector {
     public func turnOffLogger(
         forced: Bool = false
     ) {
-        Logger.informationLogsAreActive = false
-        if forced { Logger.isActive = false }
+        Properties.informationLogsAreActive = false
+        if forced { Properties.informationLogsAreActive = false }
     }
 
     /// To turn on all the information and error messages logged by the injector.
     public func turnOnLogger() {
-        Logger.isActive = true
-        Logger.informationLogsAreActive = true
+        Properties.isLoggerActive = true
+        Properties.informationLogsAreActive = true
     }
 
     /// To remove the current context from the dependencies container.
