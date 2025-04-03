@@ -257,7 +257,7 @@ To register into the dependencies container a new abstraction and its correspond
 - **implementations**:A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {}
+func register<Abstraction: Sendable>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {}
 ```
 ---
 
@@ -272,7 +272,7 @@ To register into the dependencies container a new abstraction and its correspond
 - **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func register<Abstraction>(_ abstraction: Abstraction.Type, key: String = "", implementation: @escaping () -> Abstraction?) {}
+func register<Abstraction: Sendable>(_ abstraction: Abstraction.Type, key: String = "", implementation: @escaping () -> Abstraction?) {}
 ```
 ---
 
@@ -287,7 +287,7 @@ To add into the container a new set of implementations of an already registered 
 - **implementations**: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {}
+func add<Abstraction: Sendable>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {}
 ```
 ---
 
@@ -302,7 +302,7 @@ To add into the container a new implementation of an already registered abstract
 - **implementation**: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
 
 ```swift
-func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation: @escaping () -> Abstraction?) {}
+func add<Abstraction: Sendable>(_ abstraction: Abstraction.Type, key: String, implementation: @escaping () -> Abstraction?) {}
 ```
 ---
 
@@ -316,7 +316,7 @@ To change the default implementation injected for a given abstraction by changin
 - **newKey**: A unique key that identifies the new implementation that will be injected by default.
 
 ```swift
-func updateDependencyKey<Abstraction>(of abstraction: Abstraction.Type, newKey: String) {}
+func updateDependencyKey<Abstraction: Sendable>(of abstraction: Abstraction.Type, newKey: String) {}
 ```
 ---
 
@@ -330,7 +330,7 @@ To reset a specific or all the instances of a singleton dependency stored in the
 - **key**: A unique key that identifies the specific implementation that will be reseted. Nil if we want to reset all the implementations registered for the given abstraction.
 
 ```swift
-func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String? = nil) {}
+func resetSingleton<Abstraction: Sendable>(of abstraction: Abstraction.Type, key: String? = nil) {}
 ```
 ---
 
@@ -343,7 +343,7 @@ To remove all the registed implementations of a given abstraction and the abstra
 - **abstraction**: Generic type. The protocol that was registered as dependency
 
 ```swift
-func remove<Abstraction>(_ abstraction: Abstraction.Type) {}
+func remove<Abstraction: Sendable>(_ abstraction: Abstraction.Type) {}
 ```
 ---
 

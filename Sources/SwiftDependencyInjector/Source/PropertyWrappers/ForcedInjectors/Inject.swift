@@ -8,12 +8,12 @@
 import Foundation
 
 /// The property wrapper used to mark a property as an injectable dependency.
-/// Generic value: <Abstraction> used to define the abstraction that encapsulates the injected implemententations.
+/// Generic value: <Abstraction: Sendable> used to define the abstraction that encapsulates the injected implemententations.
 ///
 /// This property wrapper avoid usage of optional abstractions but can throw a fatal error
 /// if the corresponding implementation haven't been registered.
 @propertyWrapper
-public struct Inject<Abstraction> {
+public struct Inject<Abstraction: Sendable> {
 
     /// To resolve a concrete implementation of given abstraction. Could throw fatal errors
     private let resolver: ForcedResolver<Abstraction>

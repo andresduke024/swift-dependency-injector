@@ -15,7 +15,7 @@ protocol DependenciesManagerProtocol {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - defaultDependency: The key to identify the implementation that will be injected.
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    func register<Abstraction>(
+    func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         defaultDependency: String,
         implementations: [String: () -> Abstraction?]
@@ -26,7 +26,7 @@ protocol DependenciesManagerProtocol {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - key: The key to identify the implementation that will be injected.
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    func register<Abstraction>(
+    func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
         implementation initializer: @escaping () -> Abstraction?
@@ -36,7 +36,7 @@ protocol DependenciesManagerProtocol {
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    func add<Abstraction>(
+    func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         implementations: [String: () -> Abstraction?]
     )
@@ -46,7 +46,7 @@ protocol DependenciesManagerProtocol {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - key: The key to identify the implementation that will be injected.
     ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    func add<Abstraction>(
+    func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
         implementation initializer: @escaping () -> Abstraction?
@@ -55,7 +55,7 @@ protocol DependenciesManagerProtocol {
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.
     ///   - key: A unique key that identifies the specific implementation that will be reseted. Nil if we want to reset all the implementations registered for the given abstraction.
-    func resetSingleton<Abstraction>(
+    func resetSingleton<Abstraction: Sendable>(
         of abstraction: Abstraction.Type,
         key: String?
     )
@@ -65,14 +65,14 @@ protocol DependenciesManagerProtocol {
     ///   - injectionType: An enum that defines if the implementations that will be injected is going to be extracted as a singleton or as a regular dependency (a new instance).
     ///   - key: To extract a implementation based on a specific key and ignoring the current one.
     /// - Returns: An implementation wrapped as the especific abstraction define in the generic type of the function or nil in case something goes wrong in the process.
-    func get<Abstraction>(
+    func get<Abstraction: Sendable>(
         with injectionType: InjectionType,
         key: String?
     ) -> Abstraction?
 
     /// To remove all the registed implementations of a given abstraction and the abstraction itself.
     /// - Parameter abstraction: Generic type. The protocol that was registered as dependency.
-    func remove<Abstraction>(
+    func remove<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type
     )
 

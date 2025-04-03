@@ -34,7 +34,7 @@ public struct Injector {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - defaultDependency: The key to identify the implementation that will be injected.
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    public func register<Abstraction>(
+    public func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         defaultDependency: String,
         implementations: [String: () -> Abstraction?]
@@ -47,7 +47,7 @@ public struct Injector {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - key: The key to identify the implementation that will be injected. Can be omitted if you're sure this is the only implementations for the given abstraction.
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    public func register<Abstraction>(
+    public func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String = "",
         implementation: @escaping () -> Abstraction?
@@ -59,7 +59,7 @@ public struct Injector {
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    public func add<Abstraction>(
+    public func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         implementations: [String: () -> Abstraction?]
     ) {
@@ -71,7 +71,7 @@ public struct Injector {
     ///   - abstraction: Generic type. The protocol to register as dependency.
     ///   - key: The key to identify the implementation that will be injected.
     ///   - implementation: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
-    public func add<Abstraction>(
+    public func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
         implementation: @escaping () -> Abstraction?
@@ -83,7 +83,7 @@ public struct Injector {
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.
     ///   - key: A unique key that identifies the specific implementation that will be reseted. Nil if we want to reset all the implementations registered for the given abstraction.
-    public func resetSingleton<Abstraction>(
+    public func resetSingleton<Abstraction: Sendable>(
         of abstraction: Abstraction.Type,
         key: String? = nil
     ) {
@@ -92,7 +92,7 @@ public struct Injector {
 
     /// To remove all the registed implementations of a given abstraction and the abstraction itself.
     /// - Parameter abstraction: Generic type. The protocol that was registered as dependency.
-    public func remove<Abstraction>(
+    public func remove<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type
     ) {
         DependenciesContainer.global.get(context).remove(abstraction)
@@ -131,7 +131,7 @@ public struct Injector {
     ///   - injectionType: To define the injection type used to instantiate the dependency.
     ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
     ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
-    public func getSafe<Abstraction>(
+    public func getSafe<Abstraction: Sendable>(
         _ file: String = #file,
         _ line: Int = #line,
         injectionType: InjectionType = .regular,
@@ -156,7 +156,7 @@ public struct Injector {
     ///   - injectionType: To define the injection type used to instantiate the dependency.
     ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
     ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
-    public func get<Abstraction>(
+    public func get<Abstraction: Sendable>(
         _ file: String = #file,
         _ line: Int = #line,
         injectionType: InjectionType = .regular,

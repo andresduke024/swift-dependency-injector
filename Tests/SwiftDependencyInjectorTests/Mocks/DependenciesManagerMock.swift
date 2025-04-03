@@ -19,32 +19,32 @@ class DependenciesManagerMock: DependenciesManagerProtocol {
     var removeWasCall: Bool = false
     var clearWasCall: Bool = false
 
-    func register<Abstraction>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {
+    func register<Abstraction: Sendable>(_ abstraction: Abstraction.Type, defaultDependency: String, implementations: [String: () -> Abstraction?]) {
         registerManyImplementationsWasCall = true
     }
 
-    func register<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
+    func register<Abstraction: Sendable>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
         registerOneImplementationWasCall = true
     }
 
-    func add<Abstraction>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {
+    func add<Abstraction: Sendable>(_ abstraction: Abstraction.Type, implementations: [String: () -> Abstraction?]) {
         addManyImplementationsWasCall = true
     }
 
-    func add<Abstraction>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
+    func add<Abstraction: Sendable>(_ abstraction: Abstraction.Type, key: String, implementation initializer: @escaping () -> Abstraction?) {
         addOneImplementationWasCall = true
     }
 
-    func resetSingleton<Abstraction>(of abstraction: Abstraction.Type, key: String?) {
+    func resetSingleton<Abstraction: Sendable>(of abstraction: Abstraction.Type, key: String?) {
         resetSingletonWasCall = true
     }
 
-    func get<Abstraction>(with injectionType: InjectionType, key: String?) -> Abstraction? {
+    func get<Abstraction: Sendable>(with injectionType: InjectionType, key: String?) -> Abstraction? {
         getWasCall = true
         return nil
     }
 
-    func remove<Abstraction>(_ abstraction: Abstraction.Type) {
+    func remove<Abstraction: Sendable>(_ abstraction: Abstraction.Type) {
         removeWasCall = true
     }
 

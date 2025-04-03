@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class SafeResolver<Abstraction>: Resolver<Abstraction> {
+final class SafeResolver<Abstraction: Sendable>: Resolver<Abstraction> {
     
     /// To obtain the specific implementation injected when we access to the property from outside.
     public var value: Abstraction? { dependency.unwrapValue() }

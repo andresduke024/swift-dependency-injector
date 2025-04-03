@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class ForcedResolver<Abstraction>: Resolver<Abstraction> {
+final class ForcedResolver<Abstraction: Sendable>: Resolver<Abstraction> {
     
     /// To obtain the specific implementation injected when we access to the property from outside.
     ///
