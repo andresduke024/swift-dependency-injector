@@ -137,25 +137,32 @@ class DependenciesManagerTests: XCTestCase {
     }
 
     func testResetOneSingleton() {
-        // TODO: Check this tests
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
             DummyDependencyType.first: { DummyDependencyOneMock() },
             DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
-        let dependencyOneSingleton1: DummyDependencyMockProtocol? = sut.get(with: .singleton)
+        let dependencyOneSingleton1: DummyDependencyMockProtocol? = sut.get(
+            with: .singleton,
+            key: DummyDependencyType.first
+        )
 
-        // sut.updateDependencyKey(of: DummyDependencyMockProtocol.self, newKey: DummyDependencyType.second)
-
-        let dependencyTwoSingleton1: DummyDependencyMockProtocol? = sut.get(with: .singleton)
+        let dependencyTwoSingleton1: DummyDependencyMockProtocol? = sut.get(
+            with: .singleton,
+            key: DummyDependencyType.second
+        )
 
         sut.resetSingleton(of: DummyDependencyMockProtocol.self, key: DummyDependencyType.first)
 
-        let dependencyTwoSingleton2: DummyDependencyMockProtocol? = sut.get(with: .singleton)
+        let dependencyTwoSingleton2: DummyDependencyMockProtocol? = sut.get(
+            with: .singleton,
+            key: DummyDependencyType.second
+        )
 
-        // sut.updateDependencyKey(of: DummyDependencyMockProtocol.self, newKey: DummyDependencyType.first)
-
-        let dependencyOneSingleton2: DummyDependencyMockProtocol? = sut.get(with: .singleton)
+        let dependencyOneSingleton2: DummyDependencyMockProtocol? = sut.get(
+            with: .singleton,
+            key: DummyDependencyType.first
+        )
 
         let resultDependencyOneSingleton1 = dependencyOneSingleton1?.id ?? "dependency1"
         let resultDependencyOneSingleton2 = dependencyOneSingleton2?.id ?? "dependency2"
@@ -196,8 +203,6 @@ class DependenciesManagerTests: XCTestCase {
         let result1 = dependency1?.id ?? "dependency1"
         let result2 = dependency2?.id ?? "dependency2"
 
-        XCTAssertNotNil(result1)
-        XCTAssertNotNil(result2)
         XCTAssertEqual(result1, result2)
     }
 

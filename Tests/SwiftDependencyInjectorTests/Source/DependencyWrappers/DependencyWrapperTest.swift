@@ -21,9 +21,7 @@ final class DependencyWrapperTest: XCTestCase {
         injector = nil
     }
 
-    func testCheckInjectionError() {
-        injector.register(DummyDependencyMockProtocol.self) { DummyDependencyOneMock() }
-        
+    func testCheckInjectionErrorWhenNoDependencyHasBeenRegistered() {
         let args = DependencyWrapperArgs(file: #file, line: #line, context: injectionContext)
         
         let sut = DependencyWrapper<DummyDependencyMockProtocol>(args: args)

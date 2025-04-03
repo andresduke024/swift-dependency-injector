@@ -66,7 +66,7 @@ final class ContextManager: ContextManagerProtocol {
         let fileName = Utils.extractFileName(of: file, withExtension: false)
         let newContext: InjectionContext = .tests(name: fileName)
 
-        guard managers.get(key: context.id) != nil else {
+        guard managers.get(key: newContext.id) != nil else {
             return .global
         }
 

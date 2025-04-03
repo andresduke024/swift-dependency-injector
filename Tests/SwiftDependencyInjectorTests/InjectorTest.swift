@@ -18,15 +18,18 @@ final class InjectorTest: XCTestCase {
     override func setUpWithError() throws {
         contextManagerMock = ContextManagerMock()
         
-        sut = Injector.build(context: .custom(name: ""))
-        
+        DependenciesContainer.reset(registerGlobalContextManager: false)
         DependenciesContainer.add(contextManagerMockKey, contextManagerMock)
+        
+        sut = Injector.build(context: .custom(name: ""))
     }
 
     override func tearDownWithError() throws {
         contextManagerMock = nil
-        sut = nil
+        
         DependenciesContainer.reset()
+        
+        sut = nil
     }
     
     private var dependenciesManagerMockProperties: DependenciesManagerMockProperties {

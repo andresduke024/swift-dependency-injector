@@ -7,14 +7,12 @@
 
 import Foundation
 
-struct DependenciesContainer: Sendable {
-    private init() {
-        managers = ConcurrencySafeStorage(
-            initialValues: [ "" : ContextManager() ]
-        )
+final class DependenciesContainer: Sendable {
+    private struct GlobalContextManagerBuilder {
+        let key: String = InjectionContext.global.description
+        
+        var manager: ContextManagerProtocol { ContextManager() }
     }
-    
-    private let managers: ConcurrencySafeStorage<ContextManagerProtocol>
     
     static let instance = DependenciesContainer()
     
@@ -31,7 +29,21 @@ struct DependenciesContainer: Sendable {
         Logger.log("New context manager set successfuly on DependenciesContainer with key: \(key)")
     }
 
-    static func reset() {
+    static func reset(registerGlobalContextManager: Bool = true) {
         instance.managers.removeAll()
+        
+        guard registerGlobalContextManager else { return }
+        
+        instance.addGlobalContextManager()
+    }
+    
+    private init() { addGlobalContextManager() }
+    
+    private let managers = ConcurrencySafeStorage<ContextManagerProtocol>()
+    
+    private func addGlobalContextManager() {
+        let builder = GlobalContextManagerBuilder()
+        
+        managers.set(key: builder.key, builder.manager)
     }
 }

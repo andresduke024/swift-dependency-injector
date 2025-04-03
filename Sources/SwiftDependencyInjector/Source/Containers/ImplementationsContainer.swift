@@ -59,17 +59,17 @@ final class ImplementationsContainer: Sendable {
     ) -> Sendable? {
         let key = constraintKey ?? currentKey
 
-        let implementation = implementations.get(key: key)?()
-
         if injectionType == .regular {
-            return implementation
+            return implementations.get(key: key)?()
         }
 
         if let singletonImpl = singletons.get(key: key) {
             return singletonImpl
         }
 
-        singletons.set(key: key, implementations)
+        let implementation = implementations.get(key: key)?()
+        singletons.set(key: key, implementation)
+        
         return implementation
     }
 
@@ -95,14 +95,13 @@ final class ImplementationsContainer: Sendable {
         currentKey: String? = nil,
         implementations: InitializersContainer
     ) -> ImplementationsContainer {
-        // TODO: Validate this
-        // let newContainer = self.implementations
-        // self.implementations.forEach { newContainer.set(key: $0, $1) }
-
+        let newContainer = self.implementations
+        implementations.forEach { newContainer.set(key: $0, $1) }
+        
         return ImplementationsContainer(
             abstraction: self.abstractionName,
             currentKey: currentKey ?? self.currentKey,
-            implementations: implementations,
+            implementations: newContainer,
             singletonsContainer: self.singletons
         )
     }
