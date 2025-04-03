@@ -7,23 +7,20 @@
 
 import Foundation
 
-/// To wrap the definition of a generic implementations container.
-typealias InitializersContainer = [String: () -> AnyObject?]
-
 /// This class is used to store the a set of implementation of a given type and exposed the methods to access to them.
-final class ImplementationsContainer {
+final class ImplementationsContainer: Sendable {
 
     /// The name of the abstraction for which implementations will be stored in this container.
-    private var abstractionName: String
+    private let abstractionName: String
 
     /// The key that identifies the implementation that will be injected in every injection attempt.
-    private(set) var currentKey: String
+    private let currentKey: String
 
     /// To store the builder of each implementation.
     private let implementations: InitializersContainer
 
     /// To store the implementations that were requested to inject as singletons.
-    private var singletons: [String: AnyObject?] = [:]
+    private let singletons: ConcurrencySafeStorage<Sendable>
 
     /// To get the current amount of stored implementations.
     var count: Int { implementations.count }
@@ -37,7 +34,7 @@ final class ImplementationsContainer {
             abstraction: abstraction,
             currentKey: currentKey,
             implementations: implementations,
-            singletonsContainer: [:]
+            singletonsContainer: ConcurrencySafeStorage()
         )
     }
 
@@ -45,7 +42,7 @@ final class ImplementationsContainer {
         abstraction: String,
         currentKey: String,
         implementations: InitializersContainer,
-        singletonsContainer: [String: AnyObject?]
+        singletonsContainer: ConcurrencySafeStorage<Sendable>
     ) {
         self.abstractionName = abstraction
         self.currentKey = currentKey
@@ -59,20 +56,20 @@ final class ImplementationsContainer {
     func get(
         with injectionType: InjectionType,
         constraintKey: String? = nil
-    ) -> AnyObject? {
+    ) -> Sendable? {
         let key = constraintKey ?? currentKey
 
-        let implementation = implementations[key]?()
+        let implementation = implementations.get(key: key)?()
 
         if injectionType == .regular {
             return implementation
         }
 
-        if let singletonImpl = singletons[key] {
+        if let singletonImpl = singletons.get(key: key) {
             return singletonImpl
         }
 
-        singletons[key] = implementation
+        singletons.set(key: key, implementations)
         return implementation
     }
 
@@ -98,13 +95,14 @@ final class ImplementationsContainer {
         currentKey: String? = nil,
         implementations: InitializersContainer
     ) -> ImplementationsContainer {
-        var newContainer = self.implementations
-        implementations.forEach { newContainer[$0] = $1 }
+        // TODO: Validate this
+        // let newContainer = self.implementations
+        // self.implementations.forEach { newContainer.set(key: $0, $1) }
 
         return ImplementationsContainer(
             abstraction: self.abstractionName,
             currentKey: currentKey ?? self.currentKey,
-            implementations: newContainer,
+            implementations: implementations,
             singletonsContainer: self.singletons
         )
     }

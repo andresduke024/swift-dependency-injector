@@ -8,6 +8,10 @@
 struct ConcurrencySafeStorage<T: Sendable>: Sendable {
     private let container: LegacyMutex<[String: T]>
     
+    var count: Int {
+        container.withLock { $0.count } ?? 0
+    }
+    
     init(initialValues: [String: T] = [:]) {
         container = LegacyMutex(initialValues)
     }
@@ -18,10 +22,6 @@ struct ConcurrencySafeStorage<T: Sendable>: Sendable {
     
     func get(key: String) -> T? {
         container.withLock { $0[key] }
-    }
-    
-    func count() -> Int {
-        container.withLock { $0.count } ?? 0
     }
     
     func removeValue(forKey key: String) {

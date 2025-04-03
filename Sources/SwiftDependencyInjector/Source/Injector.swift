@@ -37,7 +37,7 @@ public struct Injector {
     public func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         defaultDependency: String,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     ) {
         DependenciesContainer.global.get(context).register(abstraction, defaultDependency: defaultDependency, implementations: implementations)
     }
@@ -50,7 +50,7 @@ public struct Injector {
     public func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String = "",
-        implementation: @escaping () -> Abstraction?
+        implementation: @Sendable @escaping () -> Abstraction?
     ) {
         DependenciesContainer.global.get(context).register(abstraction, key: key, implementation: implementation)
     }
@@ -61,7 +61,7 @@ public struct Injector {
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
     public func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     ) {
         DependenciesContainer.global.get(context).add(abstraction, implementations: implementations)
     }
@@ -74,7 +74,7 @@ public struct Injector {
     public func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
-        implementation: @escaping () -> Abstraction?
+        implementation: @Sendable @escaping () -> Abstraction?
     ) {
         DependenciesContainer.global.get(context).add(abstraction, key: key, implementation: implementation)
     }

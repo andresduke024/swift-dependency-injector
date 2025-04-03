@@ -38,7 +38,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         defaultDependency: String,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     ) {
         set(abstraction, registrationType: .create, key: defaultDependency, implementations: implementations)
     }
@@ -51,7 +51,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
-        implementation initializer: @escaping () -> Abstraction?
+        implementation initializer: @Sendable @escaping () -> Abstraction?
     ) {
         set(abstraction, registrationType: .create, key: key, implementation: initializer)
     }
@@ -62,7 +62,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
     func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     ) {
         set(abstraction, registrationType: .update, implementations: implementations)
     }
@@ -75,7 +75,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
-        implementation initializer: @escaping () -> Abstraction?
+        implementation initializer: @Sendable @escaping () -> Abstraction?
     ) {
         set(abstraction, registrationType: .update, key: key, implementation: initializer)
     }
@@ -90,7 +90,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         _ abstraction: Abstraction.Type,
         registrationType: RegistrationType,
         key: String = "",
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     ) {
         let mappedImplementations = InitializersContainerMapper.map(implementations)
         store(abstraction, registrationType, key, mappedImplementations)
@@ -106,7 +106,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         _ abstraction: Abstraction.Type,
         registrationType: RegistrationType,
         key: String = "",
-        implementation initializer: @escaping () -> Abstraction?
+        implementation initializer: @Sendable @escaping () -> Abstraction?
     ) {
         let mappedImplementations = InitializersContainerMapper.map(key, initializer)
         store(abstraction, registrationType, key, mappedImplementations)
@@ -122,7 +122,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         _ abstraction: Abstraction.Type,
         _ registrationType: RegistrationType,
         _ defaultDependencyKey: String,
-        _ implementations: [String: () -> AnyObject?]
+        _ implementations: InitializersContainer
     ) {
         createRegistrationContext(abstraction: abstraction, initialRegistrationType: registrationType) { abstractionName, registrationType in
             saveDependencies(abstractionName: abstractionName, key: defaultDependencyKey, implementations: implementations, registrationType)
@@ -287,7 +287,9 @@ final class DependenciesManager: DependenciesManagerProtocol {
             return nil
         }
 
-        guard let implementation: Abstraction = AbstractionMapper.map(implementations.get(with: injectionType, constraintKey: key)) else {
+        let result = implementations.get(with: injectionType, constraintKey: key)
+        
+        guard let implementation: Abstraction = AbstractionMapper.map(result) else {
             Logger.log(.implementationsCouldNotBeCasted(abstractionName))
             return nil
         }

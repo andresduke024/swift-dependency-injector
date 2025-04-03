@@ -14,7 +14,7 @@ struct AbstractionMapper {
     /// - Parameter implementation: The implementation that is going to be mapped.
     /// - Returns: A implementation instance wrapped as an instance of the given abstraction.
     static func map<Abstraction: Sendable>(
-        _ implementation: AnyObject?
+        _ implementation: Sendable?
     ) -> Abstraction? {
         let abstractionName = String(describing: Abstraction.self)
 

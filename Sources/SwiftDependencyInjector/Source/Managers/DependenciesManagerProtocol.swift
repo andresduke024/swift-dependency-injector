@@ -18,7 +18,7 @@ protocol DependenciesManagerProtocol {
     func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         defaultDependency: String,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     )
 
     /// To register into the container a new abstraction and its corresponding implementation (Useful when only exists one implementation of the given abstraction).
@@ -29,7 +29,7 @@ protocol DependenciesManagerProtocol {
     func register<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
-        implementation initializer: @escaping () -> Abstraction?
+        implementation initializer: @Sendable @escaping () -> Abstraction?
     )
 
     /// To add into the container a new set of implementations of an already registered abstraction.
@@ -38,7 +38,7 @@ protocol DependenciesManagerProtocol {
     ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
     func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
-        implementations: [String: () -> Abstraction?]
+        implementations: [String: @Sendable () -> Abstraction?]
     )
 
     /// To add into the container a new implementation of an already registered abstraction.
@@ -49,7 +49,7 @@ protocol DependenciesManagerProtocol {
     func add<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
         key: String,
-        implementation initializer: @escaping () -> Abstraction?
+        implementation initializer: @Sendable @escaping () -> Abstraction?
     )
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
     /// - Parameters:

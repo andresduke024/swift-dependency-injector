@@ -14,9 +14,15 @@ struct InitializersContainerMapper {
     /// - Parameter implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation.
     /// - Returns: A regular InitializersContainer.
     static func map<Abstraction: Sendable>(
-        _ implementations: [String: () -> Abstraction?]
+        _ implementations: [String: @Sendable () -> Abstraction?]
     ) -> InitializersContainer {
-        implementations.mapValues { initializer in { initializer() as? AnyObject } }
+        let newContainer = InitializersContainer()
+        
+        for (key, value) in implementations {
+            newContainer.set(key: key, value)
+        }
+        
+        return newContainer
     }
 
     /// To map a key and a closure to a dictionary of generic implementations (InitializersContainer).
@@ -26,9 +32,12 @@ struct InitializersContainerMapper {
     /// - Returns: A regular InitializersContainer.
     static func map<Abstraction: Sendable>(
         _ key: String?,
-        _ initializer: @escaping () -> Abstraction?
+        _ initializer: @Sendable @escaping () -> Abstraction?
     ) -> InitializersContainer {
         let newKey = key ?? UUID().uuidString
-        return [ newKey: { initializer() as? AnyObject } ]
+        let newContainer = InitializersContainer()
+        
+        newContainer.set(key: newKey, initializer)
+        return newContainer
     }
 }

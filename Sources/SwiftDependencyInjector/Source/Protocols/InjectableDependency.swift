@@ -18,6 +18,7 @@ public protocol InjectableDependency: Initializable {
 public extension InjectableDependency {
 
     /// Default definition for the 'instance' function that use de contract of the 'Initializable' protocol to get a new instance of the given class.
+    @Sendable
     static func instance() -> Self {
         return self.init()
     }
