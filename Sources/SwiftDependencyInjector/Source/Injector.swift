@@ -123,31 +123,6 @@ public struct Injector {
         DependenciesContainer.global.remove(context)
     }
     
-    /// To safely get a previously injected abstraction
-    ///
-    /// - Parameters:
-    ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
-    ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
-    ///   - injectionType: To define the injection type used to instantiate the dependency.
-    ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
-    ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
-    public func getSafe<Abstraction: Sendable>(
-        _ file: String = #file,
-        _ line: Int = #line,
-        injectionType: InjectionType = .regular,
-        constrainedTo key: String? = nil
-    ) -> Abstraction? {
-        let resolver: SafeResolver<Abstraction> = SafeResolver(
-            injection: injectionType,
-            file: file,
-            line: line,
-            context: context,
-            constrainedTo: key
-        )
-        
-        return resolver.value
-    }
-    
     /// To get a previously injected abstraction (Could throws fatal errors)
     ///
     /// - Parameters:
@@ -162,7 +137,7 @@ public struct Injector {
         injectionType: InjectionType = .regular,
         constrainedTo key: String? = nil
     ) -> Abstraction {
-        let resolver: ForcedResolver<Abstraction> = ForcedResolver(
+        let resolver: Resolver<Abstraction> = Resolver(
             injection: injectionType,
             file: file,
             line: line,

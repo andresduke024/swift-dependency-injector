@@ -8,7 +8,7 @@
 import Foundation
 
 /// Defines the structure for a class that can be used as an implementation for a given abstraction.
-public protocol InjectableDependency: Initializable {
+public protocol InjectableDependency: Initializable, Sendable {
 
     /// To encasulated a way to get an instance of the given class.
     /// - Returns: A new instance of the class tha implements this protocol.

@@ -7,9 +7,9 @@
 
 import Foundation
 
-open class Resolver<Abstraction: Sendable> {
+struct Resolver<Abstraction: Sendable> {
     /// A wrapper that will manage the whole lyfecycle of the injected implementations.
-    let dependency: DependencyWrapper<Abstraction>
+    private let dependency: DependencyWrapper<Abstraction>
     
     /// - Parameters:
     ///   - injectionType: To define the injection type used to instantiate the dependency.
@@ -37,5 +37,22 @@ open class Resolver<Abstraction: Sendable> {
         )
         
         dependency = DependencyWrapper(args: args)
+    }
+    
+    /// To obtain the specific implementation injected when we access to the property from outside.
+    ///
+    /// A fatal error would be thrown if the specific implementation is not stored in the dependency container.
+    public var value: Abstraction {
+        if let instance = dependency.unwrapValue() {
+            return instance
+        }
+
+        let error: InjectionErrors = .forcedInjectionFail(
+            "\(Abstraction.self)",
+            context: dependency.context,
+            safePropertyEquivalent: "@Inject"
+        )
+        
+        fatalError(error.message)
     }
 }

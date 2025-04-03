@@ -7,11 +7,11 @@
 
 import Foundation
 
-protocol NetworkManager {
+protocol NetworkManager: InjectableDependency {
     func validateConnection()
 }
 
-class DummyNetworkManager: NetworkManager, InjectableDependency {
+final class DummyNetworkManager: NetworkManager  {
     required init() {}
 
     func validateConnection() {}

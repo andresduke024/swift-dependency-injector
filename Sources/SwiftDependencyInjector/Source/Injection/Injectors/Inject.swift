@@ -13,10 +13,10 @@ import Foundation
 /// This property wrapper avoid usage of optional abstractions but can throw a fatal error
 /// if the corresponding implementation haven't been registered.
 @propertyWrapper
-public struct Inject<Abstraction: Sendable> {
+public struct Inject<Abstraction: Sendable>: Sendable {
 
     /// To resolve a concrete implementation of given abstraction. Could throw fatal errors
-    private let resolver: ForcedResolver<Abstraction>
+    private let resolver: Resolver<Abstraction>
 
     /// To obtain the specific implementation injected when we access to the property from outside.
     public var wrappedValue: Abstraction {
@@ -37,7 +37,7 @@ public struct Inject<Abstraction: Sendable> {
         context: InjectionContext = .global,
         constrainedTo key: String? = nil
     ) {
-        self.resolver = ForcedResolver(
+        self.resolver = Resolver(
             injection: injectionType,
             file: file,
             line: line,
