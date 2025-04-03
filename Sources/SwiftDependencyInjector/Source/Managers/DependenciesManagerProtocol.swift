@@ -8,7 +8,7 @@
 import Foundation
 
 /// To define the behavior to manage all the injection, registration and updating functionalities used in the processes related with abstractions and implementations.
-protocol DependenciesManagerProtocol {
+protocol DependenciesManagerProtocol: Sendable {
 
     /// To register into the container a new abstraction and its corresponding implementations.
     /// - Parameters:

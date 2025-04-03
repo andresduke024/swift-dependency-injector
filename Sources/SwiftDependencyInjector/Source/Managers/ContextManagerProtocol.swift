@@ -8,7 +8,7 @@
 import Foundation
 
 /// To define the behavior to handle the access to the different registered contexts.
-protocol ContextManagerProtocol {
+protocol ContextManagerProtocol: Sendable {
 
     /// To get a manager (creates a new one if not exists) based on a specific context.
     /// - Parameter context: The context to identify and access to the especific manager.

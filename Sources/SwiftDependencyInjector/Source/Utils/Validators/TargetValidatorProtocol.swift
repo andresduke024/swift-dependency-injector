@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol TargetValidatorProtocol {
+protocol TargetValidatorProtocol: Sendable {
     /// To know if the application which is using the package is running unit tests.
     var isRunningOnTestTarget: Bool { get }
 

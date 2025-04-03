@@ -11,7 +11,7 @@ import Foundation
 final class ContextManager: ContextManagerProtocol {
 
     /// To store all the managers (contexts) that can be used to register and inject dependencies.
-    private var managers: [String: DependenciesManagerProtocol] = [:]
+    private let managers = ConcurrencySafeStorage<DependenciesManagerProtocol>()
 
     /// To perform validations about the current running target.
     private let targetValidator: TargetValidatorProtocol
@@ -27,7 +27,7 @@ final class ContextManager: ContextManagerProtocol {
     /// - Parameter context: The context to identify and access to the especific manager.
     /// - Returns: An isolated instance of a manager to register, update and get dependencies.
     func get(_ context: InjectionContext) -> DependenciesManagerProtocol {
-        if let manager = managers[context.id] {
+        if let manager = managers.get(key: context.id) {
             return manager
         }
 
@@ -39,7 +39,7 @@ final class ContextManager: ContextManagerProtocol {
     /// - Returns: The new manager. Already stored into a container
     func register(_ context: InjectionContext) -> DependenciesManagerProtocol {
         let newInstance = DependenciesManager(targetValidator: targetValidator.copy(), context: context)
-        managers[context.id] = newInstance
+        managers.set(key: context.id, newInstance)
         Logger.log("New context registered successfully -> \(context.description)")
         return newInstance
     }
@@ -66,7 +66,7 @@ final class ContextManager: ContextManagerProtocol {
         let fileName = Utils.extractFileName(of: file, withExtension: false)
         let newContext: InjectionContext = .tests(name: fileName)
 
-        guard managers[newContext.id] != nil else {
+        guard managers.get(key: context.id) != nil else {
             return .global
         }
 

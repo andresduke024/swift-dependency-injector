@@ -14,7 +14,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
     typealias GenerateContextCompletion = (_ abstractionName: String, _ registrationType: RegistrationType) -> Void
 
     /// To perform validation about the current target
-    private var targetValidator: TargetValidatorProtocol
+    private let targetValidator: TargetValidatorProtocol
 
     private let context: InjectionContext
 
@@ -28,7 +28,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
 
     /// To store al the abstractions and its corresponding implementations wrapped inside of a 'ImplementationsContainer' class.
     /// The key used to idenfies each one its the abstraction's data type parsed as string.
-    private(set) var container: [String: ImplementationsContainer] = [:]
+    private let container = ConcurrencySafeStorage<ImplementationsContainer>()
 
     /// To register into the container a new abstraction and its corresponding implementations.
     /// - Parameters:
@@ -169,7 +169,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
             return
         }
 
-        guard container[abstractionName] == nil else {
+        guard container.get(key: abstractionName) == nil else {
             Logger.log(.abstractionAlreadyRegistered(abstractionName, context))
             return
         }
@@ -208,13 +208,13 @@ final class DependenciesManager: DependenciesManagerProtocol {
         abstractionName: String,
         implementations: InitializersContainer
     ) {
-        guard let implementationsContainer = container[abstractionName] else {
+        guard let implementationsContainer = container.get(key: abstractionName) else {
             Logger.log(.abstractionNotFoundForUpdate(abstractionName))
             return
         }
 
         let newImplementationsContainer = implementationsContainer.copyWith(implementations: implementations)
-        container[abstractionName] = newImplementationsContainer
+        container.set(key: abstractionName, newImplementationsContainer)
 
         let successUpdateMessage = "'\(abstractionName)' abstraction updated succesfully with \(implementations.count) injectable implementations."
         let totalCountMessage = "\(newImplementationsContainer.count) Implementations registered in total"
@@ -231,8 +231,13 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String,
         implementations: InitializersContainer
     ) {
-        let implementationsContainer = ImplementationsContainer(abstraction: abstractionName, currentKey: key, implementations: implementations)
-        container[abstractionName] = implementationsContainer
+        let implementationsContainer = ImplementationsContainer(
+            abstraction: abstractionName,
+            currentKey: key,
+            implementations: implementations
+        )
+        
+        container.set(key: abstractionName, implementationsContainer)
 
         Logger.log("'\(abstractionName)' abstraction registered succesfully with \(implementations.count) injectable implementations")
     }
@@ -247,7 +252,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String,
         implementations: InitializersContainer
     ) {
-        if container[abstractionName] == nil {
+        if container.get(key: abstractionName) == nil {
             create(abstractionName: abstractionName, key: key, implementations: implementations)
             return
         }
@@ -264,7 +269,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String? = nil
     ) {
         let abstractionName = Utils.createName(for: abstraction)
-        guard let item = container[abstractionName] else {
+        guard let item = container.get(key: abstractionName) else {
             Logger.log(.notAbstrationFound(abstractionName, context: context))
             return
         }
@@ -282,7 +287,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String? = nil
     ) -> Abstraction? {
         let abstractionName = Utils.createName(for: Abstraction.self)
-        guard let implementations = container[abstractionName] else {
+        guard let implementations = container.get(key: abstractionName) else {
             Logger.log(.notAbstrationFound(abstractionName, context: context))
             return nil
         }
