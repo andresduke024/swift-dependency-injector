@@ -49,8 +49,7 @@ struct Resolver<Abstraction: Sendable> {
 
         let error: InjectionErrors = .forcedInjectionFail(
             "\(Abstraction.self)",
-            context: dependency.context,
-            safePropertyEquivalent: "@Inject"
+            context: dependency.context
         )
         
         fatalError(error.message)

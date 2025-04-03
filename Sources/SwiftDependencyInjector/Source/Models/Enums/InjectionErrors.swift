@@ -34,7 +34,7 @@ enum InjectionErrors: Error, Sendable {
 
     /// When no registered abstraction was founded in the container with the given type and it was requested from a forced injection.
     /// It produces a fatal error (Application crash).
-    case forcedInjectionFail(_ abstractionName: String, context: InjectionContext, safePropertyEquivalent: String? = nil)
+    case forcedInjectionFail(_ abstractionName: String, context: InjectionContext)
 
     // swiftlint:disable line_length
     /// A computed property to obtain a specific error message based on the current case.
@@ -54,13 +54,8 @@ enum InjectionErrors: Error, Sendable {
             return "Not implementation found for '\(abstractionName)' injection. File: \(file)"
         case .equalDependecyKeyOnUpdate(let abstractionName, let key):
             return "The dependency key '\(key)' for '\(abstractionName)' abstraction is already stored. Try to set a new one to make real changes to the injected implementations."
-        case .forcedInjectionFail(let abstractionName, let context, let safePropertyEquivalent):
-            let baseMessage = "No implementation found for abstraction of type \(abstractionName) in context with identifier \(context.description)."
-            let safePropertyEquivalentMessage = "Use \(safePropertyEquivalent ?? "") instead if a you want to achieve an optional dependency injection."
-
-            return safePropertyEquivalent == nil
-                ? baseMessage
-                : "\(baseMessage) \(safePropertyEquivalentMessage)"
+        case .forcedInjectionFail(let abstractionName, let context):
+            return "No implementation found for abstraction of type \(abstractionName) in context with identifier \(context.description)."
         }
     }
     // swiftlint:enable line_length

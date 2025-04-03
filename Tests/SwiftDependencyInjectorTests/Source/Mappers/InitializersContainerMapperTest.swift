@@ -11,9 +11,9 @@ import XCTest
 final class InitializersContainerMapperTest: XCTestCase {
 
     func testMapManyImplementations() {
-        let implementations: [String: () -> DummyDependencyMockProtocol?] = [
-            "one": DummyDependencyOneMock.instance,
-            "two": DummyDependencyTwoMock.instance
+        let implementations: [String: @Sendable () -> DummyDependencyMockProtocol?] = [
+            "one": { DummyDependencyOneMock() },
+            "two": { DummyDependencyTwoMock() }
         ]
 
         let result = InitializersContainerMapper.map(implementations)
@@ -22,7 +22,7 @@ final class InitializersContainerMapperTest: XCTestCase {
 
     func testMapOneImplementation() {
 
-        let result = InitializersContainerMapper.map("one", DummyDependencyOneMock.instance)
+        let result = InitializersContainerMapper.map("one", { DummyDependencyOneMock() })
         XCTAssertEqual(result.count, 1)
     }
 }

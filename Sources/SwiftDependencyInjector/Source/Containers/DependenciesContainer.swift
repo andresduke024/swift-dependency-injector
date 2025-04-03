@@ -8,15 +8,22 @@
 import Foundation
 
 struct DependenciesContainer: Sendable {
+    private init() {
+        managers = ConcurrencySafeStorage(
+            initialValues: [ "" : ContextManager() ]
+        )
+    }
+    
+    private let managers: ConcurrencySafeStorage<ContextManagerProtocol>
+    
     static let instance = DependenciesContainer()
     
-    private init() {}
-    
-    private let managers = ConcurrencySafeStorage<ContextManagerProtocol>()
-    
     static var global: ContextManagerProtocol {
-        // TODO: Check this
-        instance.managers.first!
+        guard let context = instance.managers.first else {
+            fatalError("Invalid global context for dependencies container.")
+        }
+        
+        return context
     }
 
     static func add(_ key: String, _ manager: ContextManagerProtocol) {

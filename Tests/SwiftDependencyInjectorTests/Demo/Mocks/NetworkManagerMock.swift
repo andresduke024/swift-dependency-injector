@@ -8,8 +8,6 @@
 import Foundation
 @testable import SwiftDependencyInjector
 
-class NetworkManagerMock: NetworkManager, InjectableDependency {
-    required init() {}
-
+struct NetworkManagerMock: NetworkManager {
     func validateConnection() {}
 }

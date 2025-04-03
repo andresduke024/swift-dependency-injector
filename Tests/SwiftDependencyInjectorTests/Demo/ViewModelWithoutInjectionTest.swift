@@ -28,10 +28,10 @@ final class ViewModelWithoutInjectionTest: XCTestCase {
         sut = nil
     }
 
-    func testGetData() throws {
+    func testGetData() async throws {
         let expected = [Int]()
 
-        sut.loadData()
+        await sut.loadData()
 
         XCTAssertEqual(sut.data, expected)
     }

@@ -28,7 +28,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
 
     /// To store al the abstractions and its corresponding implementations wrapped inside of a 'ImplementationsContainer' class.
     /// The key used to idenfies each one its the abstraction's data type parsed as string.
-    private let container = ConcurrencySafeStorage<ImplementationsContainer>()
+    let container = ConcurrencySafeStorage<ImplementationsContainer>()
 
     /// To register into the container a new abstraction and its corresponding implementations.
     /// - Parameters:

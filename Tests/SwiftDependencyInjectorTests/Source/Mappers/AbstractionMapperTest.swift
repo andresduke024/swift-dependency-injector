@@ -11,7 +11,7 @@ import XCTest
 final class AbstractionMapperTest: XCTestCase {
     func testMapSuccess() {
         let dependencyMock = DummyDependencyOneMock()
-        let mock = dependencyMock as AnyObject
+        let mock = dependencyMock
 
         let result: DummyDependencyMockProtocol? = AbstractionMapper.map(mock)
         XCTAssertNotNil(result)
@@ -19,7 +19,7 @@ final class AbstractionMapperTest: XCTestCase {
 
     func testMapFail() {
         let dependencyMock = DummyDependency()
-        let mock = dependencyMock as AnyObject
+        let mock = dependencyMock
 
         let result: DummyDependencyMockProtocol? = AbstractionMapper.map(mock)
         XCTAssertNil(result)

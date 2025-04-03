@@ -8,26 +8,29 @@
 import Foundation
 @testable import SwiftDependencyInjector
 
-class ContextManagerMock: ContextManagerProtocol {
-
+class ContextManagerMockProperties {
     var validContext = InjectionContext.global
     var dependenciesManager = DependenciesManagerMock()
-
     var removeWassCall: Bool = false
+}
 
+class ContextManagerMock: @unchecked Sendable, ContextManagerProtocol {
+
+    let properties = ContextManagerMockProperties()
+    
     func get(_ context: InjectionContext) -> DependenciesManagerProtocol {
-        dependenciesManager
+        properties.dependenciesManager
     }
 
     func register(_ context: InjectionContext) -> DependenciesManagerProtocol {
-        dependenciesManager
+        properties.dependenciesManager
     }
 
     func remove(_ context: InjectionContext) {
-        removeWassCall = true
+        properties.removeWassCall = true
     }
 
     func transformToValidContext(_ context: InjectionContext, file: String) -> InjectionContext {
-        validContext
+        properties.validContext
     }
 }

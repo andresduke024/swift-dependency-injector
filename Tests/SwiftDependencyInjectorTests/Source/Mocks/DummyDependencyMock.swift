@@ -15,7 +15,7 @@ struct DummyDependencyType {
     static let fourth = "fourth"
 }
 
-protocol DummyDependencyMockProtocol: AnyObject {
+protocol DummyDependencyMockProtocol: AnyObject, Sendable {
     func sayHello()
 }
 
@@ -25,36 +25,28 @@ extension DummyDependencyMockProtocol {
     }
 }
 
-final class DummyDependencyOneMock: DummyDependencyMockProtocol, InjectableDependency {
-    required init() {}
-
+final class DummyDependencyOneMock: DummyDependencyMockProtocol {
     func sayHello() {
         print("Hello from first dummy dependency")
     }
 }
 
-final class DummyDependencyTwoMock: DummyDependencyMockProtocol, InjectableDependency {
-    required init() {}
-
+final class DummyDependencyTwoMock: DummyDependencyMockProtocol {
     func sayHello() {
         print("Hello from second dummy dependency")
     }
 }
 
-final class DummyDependencyThreeMock: DummyDependencyMockProtocol, InjectableDependency {
-    required init() {}
-
+final class DummyDependencyThreeMock: DummyDependencyMockProtocol {
     func sayHello() {
         print("Hello from third dummy dependency")
     }
 }
 
-final class DummyDependencyFourMock: DummyDependencyMockProtocol, InjectableDependency {
-    required init() {}
-
+final class DummyDependencyFourMock: DummyDependencyMockProtocol {
     func sayHello() {
         print("Hello from fourth dummy dependency")
     }
 }
 
-final class DummyDependency {}
+struct DummyDependency: Sendable {}

@@ -60,7 +60,7 @@ final class DependencyWrapper<Abstraction: Sendable>: Sendable {
     func unwrapValue() -> Abstraction? { value }
 
     /// To validate if an injection was completed successfully
-    private func checkInjectionError() {
+    func checkInjectionError() {
         guard value == nil else { return }
 
         let abstractionName = Utils.createName(for: Abstraction.self)

@@ -1,5 +1,5 @@
 //
-//  InjectableTests.swift
+//  InjectTests.swift
 //  
 //
 //  Created by Andres Duque on 19/12/23.
@@ -8,9 +8,9 @@
 import XCTest
 @testable import SwiftDependencyInjector
 
-final class InjectableTests: XCTestCase {
+final class InjectTests: XCTestCase {
 
-    @Injectable var sut: MockInjectableProtocol?
+    @Inject var sut: MockInjectableProtocol
     private var injector: Injector!
 
     override func setUpWithError() throws {
@@ -24,18 +24,12 @@ final class InjectableTests: XCTestCase {
     }
 
     func testInjectionCompletedSuccessfully() {
-        injector.register(MockInjectableProtocol.self, implementation: MockInjectable1.instance)
+        injector.register(MockInjectableProtocol.self) {
+            MockInjectable1()
+        }
 
-        let result = sut?.getMockData()
+        let result = sut.getMockData()
 
         XCTAssertEqual(result, "mock_data_1")
-    }
-
-    func testInjectionIncompleted() {
-        injector.destroy()
-
-        let result = sut?.getMockData()
-
-        XCTAssertNil(result)
     }
 }

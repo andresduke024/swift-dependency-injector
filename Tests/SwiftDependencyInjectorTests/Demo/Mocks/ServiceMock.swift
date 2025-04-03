@@ -8,14 +8,10 @@
 import Foundation
 @testable import SwiftDependencyInjector
 
-class ServiceSuccessMock: Service, InjectableDependency {
-    required init() {}
-
+struct ServiceSuccessMock: Service {
     func getData() -> [Int] { [1, 2, 3, 4] }
 }
 
-class ServiceFailMock: Service, InjectableDependency {
-    required init() {}
-
+struct ServiceFailMock: Service {
     func getData() -> [Int] { [] }
 }

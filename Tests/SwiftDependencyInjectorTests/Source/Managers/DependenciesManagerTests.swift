@@ -23,104 +23,104 @@ class DependenciesManagerTests: XCTestCase {
 
     func testRegisterAbstractionWithImplementationsGroup() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let expectedCount = 1
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
         XCTAssertEqual(sut.container.count, expectedCount)
-        XCTAssertNotNil(sut.container[expectedSavedKey])
+        XCTAssertNotNil(sut.container.get(key: expectedSavedKey))
     }
 
     func testRegisterImplementationsGroup() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
-        let result = sut.container[expectedSavedKey]?.count ?? 0
+        let result = sut.container.get(key: expectedSavedKey)?.count ?? 0
         XCTAssertEqual(result, 2)
     }
 
     func testRegisterAbstractionWithOneImplementation() {
-        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
+        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
 
         let expectedCount = 1
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
         XCTAssertEqual(sut.container.count, expectedCount)
-        XCTAssertNotNil(sut.container[expectedSavedKey])
+        XCTAssertNotNil(sut.container.get(key: expectedSavedKey))
     }
 
     func testRegisterOneImplementation() {
-        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
+        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
 
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
-        let result = sut.container[expectedSavedKey]?.count ?? 0
+        let result = sut.container.get(key: expectedSavedKey)?.count ?? 0
         XCTAssertEqual(result, 1)
     }
 
     func testAddAbstractionImplementation() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
-        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third, implementation: DummyDependencyThreeMock.instance)
+        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third) { DummyDependencyThreeMock() }
 
         let expectedCount = 1
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
         XCTAssertEqual(sut.container.count, expectedCount)
-        XCTAssertNotNil(sut.container[expectedSavedKey])
+        XCTAssertNotNil(sut.container.get(key: expectedSavedKey))
     }
 
     func testAddAbstractionImplementationAndCheckCount() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
-        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third, implementation: DummyDependencyThreeMock.instance)
+        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third) { DummyDependencyThreeMock() }
 
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
-        let result = sut.container[expectedSavedKey]?.count ?? 0
+        let result = sut.container.get(key: expectedSavedKey)?.count ?? 0
         XCTAssertEqual(result, 3)
     }
 
     func testAddAbstractionImplementations() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
-        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third, implementation: DummyDependencyThreeMock.instance)
+        sut.add(DummyDependencyMockProtocol.self, key: DummyDependencyType.third) { DummyDependencyThreeMock() }
 
         let expectedCount = 1
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
         XCTAssertEqual(sut.container.count, expectedCount)
-        XCTAssertNotNil(sut.container[expectedSavedKey])
+        XCTAssertNotNil(sut.container.get(key: expectedSavedKey))
     }
 
     func testAddAbstractionImplementationsAndCheckCount() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         sut.add(DummyDependencyMockProtocol.self, implementations: [
-            DummyDependencyType.third: DummyDependencyThreeMock.instance,
-            DummyDependencyType.fourth: DummyDependencyFourMock.instance
+            DummyDependencyType.third: { DummyDependencyThreeMock() },
+            DummyDependencyType.fourth: { DummyDependencyFourMock() }
         ])
 
         let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
-        let result = sut.container[expectedSavedKey]?.count ?? 0
+        let result = sut.container.get(key: expectedSavedKey)?.count ?? 0
         XCTAssertEqual(result, 4)
     }
 
 
     func testResetAllSingletons() {
-        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
+        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
 
         let dependency1: DummyDependencyMockProtocol? = sut.get(with: .singleton)
 
@@ -139,8 +139,8 @@ class DependenciesManagerTests: XCTestCase {
     func testResetOneSingleton() {
         // TODO: Check this tests
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let dependencyOneSingleton1: DummyDependencyMockProtocol? = sut.get(with: .singleton)
@@ -169,8 +169,8 @@ class DependenciesManagerTests: XCTestCase {
 
     func testGetDependencyWithRegularInjectionType() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let dependency1: DummyDependencyMockProtocol? = sut.get(with: .regular)
@@ -186,8 +186,8 @@ class DependenciesManagerTests: XCTestCase {
 
     func testGetDependencyWithSingletonInjectionType() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let dependency1: DummyDependencyMockProtocol? = sut.get(with: .singleton)
@@ -203,8 +203,8 @@ class DependenciesManagerTests: XCTestCase {
 
     func testGetDependencyWithConstraintKey() {
         sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
         ])
 
         let result: DummyDependencyMockProtocol? = sut.get(with: .regular, key: DummyDependencyType.second)
@@ -212,7 +212,7 @@ class DependenciesManagerTests: XCTestCase {
     }
 
     func testRemoveAbstraction() {
-        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
+        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
 
         sut.remove(DummyDependencyMockProtocol.self)
 
@@ -222,7 +222,7 @@ class DependenciesManagerTests: XCTestCase {
     }
 
     func testClearContainer() {
-        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)
+        sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
 
         sut.clear()
 

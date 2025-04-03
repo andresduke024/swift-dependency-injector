@@ -22,8 +22,11 @@ final class DependencyWrapperTest: XCTestCase {
     }
 
     func testCheckInjectionError() {
-        injector.register(DummyDependencyMockProtocol.self, implementation: DummyDependencyOneMock.instance)
-        let sut = DependencyWrapper<DummyDependencyMockProtocol>(#file, #line, injectionContext)
+        injector.register(DummyDependencyMockProtocol.self) { DummyDependencyOneMock() }
+        
+        let args = DependencyWrapperArgs(file: #file, line: #line, context: injectionContext)
+        
+        let sut = DependencyWrapper<DummyDependencyMockProtocol>(args: args)
 
         sut.checkInjectionError()
         XCTAssertNil(sut.value)
