@@ -8,7 +8,7 @@
 import Foundation
 
 /// Defines how all the implementations that will be injected are going to be created and returned.
-public enum InjectionType {
+public enum InjectionType: Sendable {
 
     /// Every injection will create a new instance of the given implementation when this case is selected.
     case regular

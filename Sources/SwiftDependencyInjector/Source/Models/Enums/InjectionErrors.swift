@@ -8,7 +8,7 @@
 import Foundation
 
 /// Defines all the controlled errors that could be throw it in the package implementation.
-enum InjectionErrors: Error {
+enum InjectionErrors: Error, Sendable {
 
     /// When an abstraction is already store into the container.
     /// The container only allows to store one abstractions with one or many implementations.

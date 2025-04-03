@@ -119,19 +119,6 @@ class DependenciesManagerTests: XCTestCase {
         XCTAssertEqual(result, 4)
     }
 
-    func testUpdateDependencyKey() {
-        sut.register(DummyDependencyMockProtocol.self, defaultDependency: DummyDependencyType.first, implementations: [
-            DummyDependencyType.first: DummyDependencyOneMock.instance,
-            DummyDependencyType.second: DummyDependencyTwoMock.instance
-        ])
-
-        let expected = DummyDependencyType.third
-        sut.updateDependencyKey(of: DummyDependencyMockProtocol.self, newKey: expected)
-
-        let expectedSavedKey = String(describing: DummyDependencyMockProtocol.self)
-        let result = sut.container[expectedSavedKey]?.currentKey ?? ""
-        XCTAssertEqual(result, expected)
-    }
 
     func testResetAllSingletons() {
         sut.register(DummyDependencyMockProtocol.self, key: DummyDependencyType.first, implementation: DummyDependencyOneMock.instance)

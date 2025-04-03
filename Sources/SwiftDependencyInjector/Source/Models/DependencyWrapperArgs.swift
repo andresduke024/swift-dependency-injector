@@ -7,9 +7,8 @@
 
 import Foundation
 
-struct DependencyWrapperArgs {
+struct DependencyWrapperArgs: Sendable {
     let injectionType: InjectionType
-    let instantiationType: InstantiationType
     let file: String
     let line: Int
     let context: InjectionContext
@@ -17,21 +16,18 @@ struct DependencyWrapperArgs {
     
     /// - Parameters:
     ///   - injectionType: To define the injection type used to instantiate the dependency.
-    ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - context: To specific a special injection context to extract the implementation to inject from a isolated container.
     ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
     init(
         injection injectionType: InjectionType = .regular,
-        instantiation instantiationType: InstantiationType = .lazy,
         file: String = #file,
         line: Int = #line,
         context: InjectionContext = .global,
         constrainedTo key: String? = nil
     ) {
         self.injectionType = injectionType
-        self.instantiationType = instantiationType
         self.file = file
         self.line = line
         self.context = context
@@ -49,7 +45,6 @@ struct DependencyWrapperArgs {
     ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
     func copy(
         injection injectionType: InjectionType? = nil,
-        instantiation instantiationType: InstantiationType? = nil,
         file: String? = nil,
         line: Int? = nil,
         context: InjectionContext? = nil,
@@ -57,7 +52,6 @@ struct DependencyWrapperArgs {
     ) -> DependencyWrapperArgs {
         DependencyWrapperArgs(
             injection: injectionType ?? self.injectionType,
-            instantiation: instantiationType ?? self.instantiationType,
             file: file ?? self.file,
             line: line ?? self.line,
             context: context ?? self.context,

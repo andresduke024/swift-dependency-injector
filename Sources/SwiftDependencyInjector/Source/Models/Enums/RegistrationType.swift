@@ -8,7 +8,7 @@
 import Foundation
 
 /// Defines the way to register dependencies into the container.
-enum RegistrationType {
+enum RegistrationType: Sendable {
 
     /// To add a new value into the container.
     case create

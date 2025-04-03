@@ -23,14 +23,12 @@ public struct Injectable<Abstraction> {
     /// To initialize the property wrapper. All parameters has a default value so it could be initialize with an empty constructor.
     /// - Parameters:
     ///   - injectionType: To define the injection type used to instantiate the dependency.
-    ///   - instantiationType: To define at which point the implementation will be instantiated and injected.
     ///   - file: The name of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - line: The specific line of the file where this property is being used. It should not be defined outside, is initialized by default.
     ///   - context: To specific a special injection context to extract the implementation to inject from a isolated container.
     ///   - key: To constrain the injection to a specific key and ignore the key settled on the current context.
     public init(
         injection injectionType: InjectionType = .regular,
-        instantiation instantiationType: InstantiationType = .lazy,
         _ file: String = #file,
         _ line: Int = #line,
         context: InjectionContext = .global,
@@ -38,7 +36,6 @@ public struct Injectable<Abstraction> {
     ) {
         self.resolver = SafeResolver(
             injection: injectionType,
-            instantiation: instantiationType,
             file: file,
             line: line,
             context: context,

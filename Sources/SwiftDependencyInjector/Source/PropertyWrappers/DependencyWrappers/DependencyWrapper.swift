@@ -7,9 +7,8 @@
 
 import Foundation
 
-/// Base class used to encapsulate the common behavior of a dependency wrapper.
-/// **It should not be instantiate**
-open class DependencyWrapper<Abstraction> {
+/// Class used to encapsulate the common behavior of a dependency wrapper.
+final class DependencyWrapper<Abstraction: Sendable>: Sendable {
 
     /// The name of the file where the wrapped implementation is being used.
     let filePath: String
@@ -18,37 +17,55 @@ open class DependencyWrapper<Abstraction> {
     let line: Int
 
     /// To store the current injected implementation.
-    var value: Abstraction?
+    let value: Abstraction?
 
     /// To store the dependency specific key in case if needs it
-    var constraintKey: String?
+    let constraintKey: String?
 
     /// To store the dependency specific context in case if needs it
-    var context: InjectionContext
+    let context: InjectionContext
+    
+    /// To define the type of injection that we will use when try to get an implementation from the container.
+    let injectionType: InjectionType
 
-    init(
+    private init(
         _ filePath: String,
         _ line: Int,
         _ context: InjectionContext,
+        _ injectionType: InjectionType,
         constrainedTo key: String? = nil
     ) {
         self.filePath = filePath
         self.line = line
         self.context = context
+        self.injectionType = injectionType
         self.constraintKey = key
+        self.value = DependenciesContainer.global.get(context).get(with: injectionType, key: key)
+    }
+    
+    convenience init(args: DependencyWrapperArgs) {
+        self.init(
+            args.file,
+            args.line,
+            args.context,
+            args.injectionType,
+            constrainedTo: args.key
+        )
+        
+        checkInjectionError()
     }
 
     /// A facade function  used to perform all the validations and processes required before obtain an injected implementation.
-    /// **Must override**
     /// - Returns: An optional implementation of the given abstraction.
-    open func unwrapValue() -> Abstraction? { nil }
+    func unwrapValue() -> Abstraction? { value }
 
     /// To validate if an injection was completed successfully
-    final func checkInjectionError() {
+    private func checkInjectionError() {
         guard value == nil else { return }
 
         let abstractionName = Utils.createName(for: Abstraction.self)
-        let error: InjectionErrors = .noImplementationFoundOnInjection(abstractionName, file: "\(filePath) \(line)")
+        let fileLocation = "\(filePath) \(line)"
+        let error: InjectionErrors = .noImplementationFoundOnInjection(abstractionName, file: fileLocation)
         Logger.log(error)
     }
 }

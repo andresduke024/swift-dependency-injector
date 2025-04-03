@@ -8,7 +8,7 @@
 import Foundation
 
 /// Used to separe a set of injectable abstractions and implementations into different containers.
-public enum InjectionContext {
+public enum InjectionContext: Sendable {
 
     /// Used by the whole application, all dependencies will be registered into this context by default and it's accesible from every where.
     case global
