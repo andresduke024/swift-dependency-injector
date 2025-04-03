@@ -16,8 +16,8 @@ class ViewModel {
 
     var data: [Int] = []
 
-    func loadData() {
-        networkManager.validateConnection()
+    func loadData() async {
+        await networkManager.validateConnection()
         data = service.getData()
     }
 }

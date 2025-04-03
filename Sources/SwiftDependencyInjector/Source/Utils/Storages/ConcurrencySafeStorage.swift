@@ -12,6 +12,10 @@ struct ConcurrencySafeStorage<T: Sendable>: Sendable {
         container.withLock { $0.count } ?? 0
     }
     
+    var first: T? {
+        container.withLock { $0.first?.value }
+    }
+    
     init(initialValues: [String: T] = [:]) {
         container = LegacyMutex(initialValues)
     }

@@ -1,4 +1,4 @@
-// swift-tools-version: 5.4
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -9,15 +9,21 @@ let package = Package(
     products: [
         .library(
             name: "SwiftDependencyInjector",
-            targets: ["SwiftDependencyInjector"])
+            targets: ["SwiftDependencyInjector"]
+        )
     ],
     dependencies: [],
     targets: [
         .target(
             name: "SwiftDependencyInjector",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
+        ),
         .testTarget(
             name: "SwiftDependencyInjectorTests",
-            dependencies: ["SwiftDependencyInjector"])
+            dependencies: ["SwiftDependencyInjector"]
+        )
     ]
 )

@@ -7,15 +7,13 @@
 
 import Foundation
 
-protocol Service: InjectableDependency {
+protocol Service: Sendable {
     func getData() -> [Int]
 }
 
-final class DummyService: Service  {
+struct DummyService: Service  {
     @Inject
     private var repository: Repository
-
-    required init() {}
 
     func getData() -> [Int] {
         repository.fetch()

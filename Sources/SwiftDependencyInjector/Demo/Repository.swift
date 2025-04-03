@@ -12,18 +12,14 @@ enum RepositoryType: String {
     case remote
 }
 
-protocol Repository: InjectableDependency {
+protocol Repository: Sendable {
     func fetch() -> [Int]
 }
 
-final class LocalRepository: Repository {
-    required init() {}
-
+struct LocalRepository: Repository {
     func fetch() -> [Int] { [1, 2, 3, 4] }
 }
 
-final class RemoteRepository: Repository {
-    required init() {}
-
+struct RemoteRepository: Repository {
     func fetch() -> [Int] { [5, 6, 7, 8] }
 }

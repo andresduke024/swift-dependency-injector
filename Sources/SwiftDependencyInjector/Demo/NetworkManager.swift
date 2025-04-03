@@ -7,12 +7,10 @@
 
 import Foundation
 
-protocol NetworkManager: InjectableDependency {
-    func validateConnection()
+protocol NetworkManager: Sendable {
+    func validateConnection() async
 }
 
-final class DummyNetworkManager: NetworkManager  {
-    required init() {}
-
-    func validateConnection() {}
+actor DummyNetworkManager: NetworkManager  {
+    func validateConnection() async {}
 }
