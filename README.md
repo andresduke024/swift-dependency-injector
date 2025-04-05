@@ -1,6 +1,6 @@
 # swift-dependency-injector
 
-[![Swift](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8-blue?style=flat-square)](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8-blue?style=flat-square)
+[![Swift](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8_5.9_5.10_6-blue?style=flat-square)](https://img.shields.io/badge/Swift-5.4_5.5_5.6_5.7_5.8_5.9_5.10_6-blue?style=flat-square)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SwiftDependencyInjector.svg?style=flat-square)](https://img.shields.io/cocoapods/v/SwiftDependencyInjector.svg?style=flat-square)
 
@@ -15,10 +15,7 @@ A native dependency container written in swift that manages the initialization, 
 - Demo
 - Docs
     - Injector
-    - @Injectable
-    - @ObservedInjectable
     - @Inject
-    - @ObservedInject
     - Injection contexts
     - Injection errors
     - Injection types
@@ -37,7 +34,7 @@ Once you have your Swift package set up, adding swift-dependency-injector as a d
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "1.3.0"))
+    .package(url: "https://github.com/andresduke024/swift-dependency-injector.git", .upToNextMinor(from: "2.0.0"))
 ]
 ```
 
@@ -54,34 +51,22 @@ pod 'SwiftDependencyInjector'
 First, define a protocol. For this example we are going to use a **Repository** protocol that has the job to fetch some data.
 
 ```swift
-protocol Repository {
+protocol Repository: Sendable {
     func fetch() -> [Int]
 }
 ```
+
+Notice that protocol implements **Sendable** protocol. This is very important to ensure thread and concurrency safe rules for Swift 6.
 
 Second, we have to create the classes that are going to implement this protocol.
 
 ```swift
-class LocalRepository: Repository, InjectableDependency {
-    required init() {}
-    
+struct LocalRepository: Repository {
     func fetch() -> [Int] { [1,2,3,4] }
 }
 
-class RemoteRepository: Repository, InjectableDependency {
-    required init() {}
-    
+struct RemoteRepository: Repository {
     func fetch() -> [Int] { [5,6,7,8] }
-}
-```
-
-Notice that both classes implements the Injectable Dependency protocol too. This protocol defines a default property that give us a contract to access to an instance of the class. We will use this property later.
-
-It is a valid option to implement the "InjectableDependency" protocol directly in the base abstraction.
-
-```swift
-protocol Repository: InjectableDependency {
-    func fetch() -> [Int]
 }
 ```
 
@@ -101,14 +86,12 @@ To achive this we are going to use the Injector class. This is a middleware that
 
 ```swift
 Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
-    RepositoryType.remote.rawValue : RemoteRepository.instance,
-    RepositoryType.local.rawValue : LocalRepository.instance
+    RepositoryType.remote.rawValue : { RemoteRepository() } ,
+    RepositoryType.local.rawValue : { LocalRepository() }
 ])
 ```
 
 The function Injector.register takes 3 parameters. The first one is the protocol that we are going to register, the second one is a key that allows to identify the dependency injected by default for the container and the third one is a dictionary. This dictionary has a key to identify each implementation and a function that allows to extract an instance of a specific implementation. 
-
-At this point it becomes useful the **InjectableDependecy** protocol, as all our classes implements this protocol we now have access to the property 'instance' that makes the work for us of define an initializer for the class.
 
 ---
 **NOTE**
@@ -119,8 +102,8 @@ We recommend to register all the dependencies at the very beginning of the appli
 class ApplicationSetup {
     static func start() {
         Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
-            RepositoryType.remote.rawValue : RemoteRepository.instance,
-            RepositoryType.local.rawValue : LocalRepository.instance
+            RepositoryType.remote.rawValue : { RemoteRepository() } ,
+            RepositoryType.local.rawValue : { LocalRepository() }
         ])
     }
 }
@@ -136,22 +119,22 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 Now that all dependencies are registered into the container we can start using them in other classes as injectables properties.
 
-For that we are going to create a DummyService. This class is going to have one property of type **Repository** and this property is going to be wrapped by a custom property wrapper named **@Injectable**.
+For that we are going to create a DummyService. This class is going to have one property of type **Repository** and this property is going to be wrapped by a custom property wrapper named **@Inject**.
 
 ```swift
 class DummyService {
-    @Injectable private var repository: Repository?
+    @Inject 
+    private var repository: Repository
     
     func getData() -> [Int] {
-        repository?.fetch() ?? []
+        repository.fetch()
     }
 }
 ```
 
-Notice that we don't have to define any kind of initializer for the property *repository*. The **@Injectable** property wrapper will manage all the work of search into the dependencies container and extract an instance of an especific implementation of the **Repository** protocol.
+Notice that we don't have to define any kind of initializer for the property *repository*. The **@Inject** property wrapper will manage all the work of search into the dependencies container and extract an instance of an especific implementation of the **Repository** protocol.
 
-For this to be possible we only have to take into account two things. The first thing is that the data type of the property must be a protocol (previously registered in the container) and not a specific implementation.
-The second thing to note is that the property must be marked as an optional data type, because in case the container is not able to find an implementation to inject it will return a nil value.
+For this to be possible we only have to take into account one thing. The data type of the property must be a protocol (previously registered in the container) and not a specific implementation.
 
 And that's all, by this point we can replicate this steps for every dependency we want to make injectable and start to using them all around in our project.
 
@@ -161,9 +144,7 @@ We can easily mock our injected dependencies to make tests more efficient and re
 
 
 ```swift
-class RepositoryMock: Repository, InjectableDependency {
-    required init() {}
-
+struct RepositoryMock: Repository {
     func fetch() -> [Int] { [1,2,3,4] }
 }
 ```
@@ -178,7 +159,7 @@ final class ServiceTest: XCTestCase {
     
     override func setUp() {
         injector = Injector.build(context: .tests(name: "Service"))
-        injector.register(Repository.self, implementation: RepositoryMock.instance)
+        injector.register(Repository.self) { RepositoryMock() }
         
         sut = DummyService()
     }
@@ -306,20 +287,6 @@ func add<Abstraction: Sendable>(_ abstraction: Abstraction.Type, key: String, im
 ```
 ---
 
-#### updateDependencyKey
-
-To change the default implementation injected for a given abstraction by changing the key used in the container.
-
-**Parameters**:
-
-- **abstraction**: Generic type. The protocol (already registered) to the one we want to change the injected implementation.
-- **newKey**: A unique key that identifies the new implementation that will be injected by default.
-
-```swift
-func updateDependencyKey<Abstraction: Sendable>(of abstraction: Abstraction.Type, newKey: String) {}
-```
----
-
 #### resetSingleton
 
 To reset a specific or all the instances of a singleton dependency stored in the container.
@@ -387,12 +354,12 @@ func destroy() {}
 ```
 ---
 
-## @Injectable
+## @Inject
 
 The property wrapper used to mark a property as an injectable dependency.
 It use a generic value to define the abstraction that encapsulates the injected implemententations.
 
-The abstraction defined for this property wrapper has to be an **optional type**. This to achieve a safe injection. If there is no valid implementation registered in the dependency container, the value wrapped by this property will be null.
+With this property wrapper we are taking for granted that an implementation is already registered into the container. In case that no implementation were registered into the container we will face a "Fatal Error" throwed in our app.
 
 All the dependencies injected by using this property wrapper has two different ways of be injected (**InjectionType**).
 
@@ -402,39 +369,33 @@ All the dependencies injected by using this property wrapper has two different w
     - Every injection is going to get an already stored instance of the given implementation.
     - When is the first injection, its going to create, store and return a new instance of the given implementation.
     
-And also will have two different ways of be instantiate (**InstantiationType**).    
+**regular** is the default instantiation type, which means that it's not necessary to specified it when we use the wrapper.
 
-- **regular**:
-    - The implementation will be instantiate at the creation of the property wrapper.
-- **lazy**:
-    - The implementation will not be instantiate until it's required for the first time.
-    
-**regular** and **lazy** are the default injection and instantiation types, which means that it's not necessary to specified them when we use the wrapper.
-
-For example, to use **regular** injection type and **lazy** instantiation type we can do this:
+For example, to use **regular** injection type we can do this:
 
 ```swift
-@Injectable private var repository: Repository?
+@Inject 
+private var repository: Repository
 ```
 or
 
 ```swift
-@Injectable(injection: .regular, instantiation: .lazy)
-private var repository: Repository?
+@Inject(injection: .regular)
+private var repository: Repository
 ```
 
-And to use **singleton** injection type and **regular** instantiation type we can do something like this:
+And to use **singleton** injection type we can do something like this:
 
 ```swift
-@Injectable(injection: .singleton, instantiation: .regular) 
-private var repository: Repository?
+@Inject(injection: .singleton) 
+private var repository: Repository
 ```
 
 Finally, we have a third argument to build an injectable property. The **'constrainedTo:'** property allow us to constraint the injection to a specific key. This means the injector will search into the container with the given key ignoring the key settled globally in the current context.
 
 ```swift
-@Injectable(constrainedTo: RepositoryType.remote.rawValue)
-private var repository: Repository?
+@Inject(constrainedTo: RepositoryType.remote.rawValue)
+private var repository: Repository
 ```
 
 ---
@@ -443,78 +404,14 @@ private var repository: Repository?
 It's not necessary to specify both, we can only change one and let the other be selected by default, like this:
 
 ```swift
-@Injectable(injection: .singleton) 
-private var repository: Repository?
+@Inject(injection: .singleton) 
+private var repository: Repository
 ```
 
 ```swift
-@Injectable(instantiation: .regular) 
-private var repository: Repository?
+@Inject(constrainedTo: RepositoryType.remote.rawValue)
+private var repository: Repository
 ```
----
-
-## @ObservedInjectable
-
-The property wrapper used to mark a property as an injectable dependency which can be replaced at runtime several times.
-It use a generic value to define the abstraction that encapsulates the injected implemententations.
-
-The abstraction defined for this property wrapper has to be an **optional type**. This to achieve a safe injection. If there is no valid implementation registered in the dependency container, the value wrapped by this property will be null.
-
-```swift
-@ObservedInjectable private var repository: Repository?
-```
-
-This feature can be useful when we want to change the implementation of a dependency in real time.
-
-Imagine that we have a NetworkManager which listen to changes on internet connection. We want to use a local repository if the connection is failing and a remote repository if the connection is working successfully.
-
-To achieve that we can use the Injector class to change the default implementation of **Repository** dependency every time the connection changes.
-
-```swift
-class DummyNetworkManager {
-    func validateConnection() {
-        let isNetworkAvailable = Bool.random()
-        
-        let repositoryImplementation: RepositoryType = isNetworkAvailable ? .remote : .local
-        Injector.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
-    }
-}
-```
-
-When the default dependencies key changes a new implementation will be published to all the injectable properties that are using this property wrapper and this will automatically replace the previous stored implementation with the new one.
-
-And we can do this all the times we want and the implementations are going to change immediately.
-
-Unlike **@Injectable** this property wrapper doesn't expose the options to select the instantiation type or injection type.
-
-This means that all properties wrapped with **@ObservedInjectable** will be create with and injection type and an instantion type **regular**
-
----
-
-## @Inject
-
-This property wrapper have the same behavior of '@Injectable' but in this case with don't need to defined the abstraction as an **optional type**. If we do this we are taking for granted that an implementation is already registered into the container. In case that no implementation were registered into the container we will face a "Fatal Error" throwed in our app.
-
-```swift
-@Inject private var repository: Repository
-```
-
----
-
-## @ObservedInject
-
-This property wrapper have the same behavior of '@ObservedInjectable' but in this case with don't need to defined the abstraction as an **optional type**. If we do this we are taking for granted that an implementation is already registered into the container. In case that no implementation were registered into the container we will face a "Fatal Error" throwed in our app.
-
-```swift
-@ObservedInject private var repository: Repository
-```
-
----
-**NOTES**
-
-- When we use the wrapped value of each property wrapper we will obtain the implementation injected and instantiate based on the selected parameters. This value could be nil if at some point occurs an error on the injection process.
-- It is important to note that when we update the default value of a key for a specific dependency, it has to match one of the keys we registered when saving the dependencies in the container.
-- This works for singleton dependencies too. We change the injected value but in this case is not going to be a new instance but a previous stored singleton instance of the new defined implementation.
 ---
 
 ## Injection Contexts 
@@ -548,16 +445,16 @@ func setUp() {
 ```
 ---
 
-Both wrappers (@Injectable and @ObservedInjectable) also has the capability to specific a custom injection context to extract the implementation from a isolated container.
+**@Inject** also has the capability to specific a custom injection context to extract the implementation from a isolated container.
 
 ```swift
-@Injectable(context: .custom(name: "DummyContext"))
-private var service: Service?
+@Inject(context: .custom(name: "DummyContext"))
+private var service: Service
 ```
 
 This means when we will try to access to the wrapped value of the property, the dependencies contaier will search into the dependencies registered for the specified context and will extract from there a new implementation. 
 
-When the container can't find a dependency in the context it will return nil. It never use the global context to search for a implementation.
+When the container can't find a dependency in the context it will throw a fatal error. It never use the global context to search for a implementation.
 
 ---
 **NOTES**
@@ -587,12 +484,6 @@ When the container can't find a dependency in the context it will return nil. It
 - **NoImplementationFoundOnInjection**: 
     - When an implementation could not be injected into the wrapper, which means the current value of the wrapper is nil.
     
-- **NoPublisherFounded**: 
-    - When no publisher of a given abstraction could be found into the container.
-    
-- **NoImplementationFoundForPublish**: 
-    - When in the attempt to publish a new implementation of a given abstraction based on the current dependency key no implementation could be found into the implementations container.
-
 - **EqualDependecyKeyOnUpdate**:
     - When in the attempt to update the default dependency key of a specific abstraction the key thats already stored is equal to the new key.
     
@@ -611,16 +502,6 @@ Defines how all the implementations that will be injected are going to be create
     - Every injection will get an already stored instance of the given implementation when this case is selected.
     - When is the first injection, will create, store and return a new instance of the given implementation.
     
-## Instantiation types
-
-Defines the moment of instantiation of an injected implementation.
-
-- **regular**:
-    - The implementation will be instantiate at the creation of the property wrapper.
-    
-- **lazy**:
-    - The implementation will not be instantiate until it's required for the first time.
-
 ## License
 
 MIT license. See the [LICENSE file](LICENSE) for details.
