@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "SwiftDependencyInjector"
-  spec.version      = "1.4.1"
+  spec.version      = "2.0.0"
   spec.summary      = "A native dependency container written in swift that manages dependency injection"
 
   spec.description  = <<-DESC
