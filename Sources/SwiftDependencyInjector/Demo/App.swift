@@ -12,9 +12,9 @@ class App {
         ApplicationSetup.start()
     }
 
-    func main() -> [Int] {
+    func main() async -> [Int] {
         let viewModel = ViewModel()
-        viewModel.loadData()
+        await viewModel.loadData()
         print("The data was loaded \(viewModel.data)")
         return viewModel.data
     }

@@ -22,7 +22,7 @@ final class ServiceTest: XCTestCase {
     func testFetchDataSuccess() throws {
         let expected = [1, 2, 3, 4]
 
-        injector.register(Repository.self, implementation: RepositorySuccessMock.instance)
+        injector.register(Repository.self) { RepositorySuccessMock() }
         let sut = DummyService()
 
         let result = sut.getData()
@@ -33,7 +33,7 @@ final class ServiceTest: XCTestCase {
     func testFetchDataFail() throws {
         let expected = [Int]()
 
-        injector.register(Repository.self, implementation: RepositoryFailMock.instance)
+        injector.register(Repository.self) { RepositoryFailMock() }
         let sut = DummyService()
 
         let result = sut.getData()

@@ -7,17 +7,10 @@
 
 import Foundation
 
-protocol NetworkManager {
-    func validateConnection()
+protocol NetworkManager: Sendable {
+    func validateConnection() async
 }
 
-class DummyNetworkManager: NetworkManager, InjectableDependency {
-    required init() {}
-
-    func validateConnection() {
-        let isNetworkAvailable = Bool.random()
-
-        let repositoryImplementation: RepositoryType = isNetworkAvailable ? .remote : .local
-        Injector.global.updateDependencyKey(of: Repository.self, newKey: repositoryImplementation.rawValue)
-    }
+actor DummyNetworkManager: NetworkManager  {
+    func validateConnection() async {}
 }

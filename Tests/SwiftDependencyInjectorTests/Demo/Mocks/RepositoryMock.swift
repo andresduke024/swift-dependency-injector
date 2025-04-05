@@ -8,14 +8,10 @@
 import Foundation
 @testable import SwiftDependencyInjector
 
-class RepositorySuccessMock: Repository, InjectableDependency {
-    required init() {}
-
+struct RepositorySuccessMock: Repository {
     func fetch() -> [Int] { [1, 2, 3, 4] }
 }
 
-class RepositoryFailMock: Repository, InjectableDependency {
-    required init() {}
-
+struct RepositoryFailMock: Repository {
     func fetch() -> [Int] { [] }
 }
