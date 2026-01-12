@@ -10,5 +10,5 @@ public macro InjectedConstructor(
     _ dependencies: Any...
 ) = #externalMacro(
     module: "SwiftDependencyInjectorMacroImplementation",
-    type: "InjectedConstructor"
+    type: "InjectedConstructorMacro"
 )

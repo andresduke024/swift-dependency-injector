@@ -13,7 +13,7 @@ import SwiftSyntaxMacros
 @main
 struct SwiftDependencyInjectorMacroPlugin: CompilerPlugin {
     var providingMacros: [Macro.Type] = [
-        InjectedConstructor.self,
+        InjectedConstructorMacro.self,
         InitParameterMacro.self
     ]
 }
