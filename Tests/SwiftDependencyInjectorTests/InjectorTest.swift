@@ -70,6 +70,40 @@ final class InjectorTest: XCTestCase {
         XCTAssertTrue(result)
     }
 
+    func testRegisterManyImplementationsUsingAddOrRegister() {
+        sut.addOrRegister(DummyDependencyMockProtocol.self, implementations: [
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
+        ])
+
+        let result = dependenciesManagerMockProperties.addOrRegisterManyImplementationsWasCall
+        XCTAssertTrue(result)
+    }
+
+    func testRegisterOneImplementationUsingAddOrRegister() {
+        sut.addOrRegister(DummyDependencyMockProtocol.self, key: DummyDependencyType.first) { DummyDependencyOneMock() }
+
+        let result = dependenciesManagerMockProperties.addOrRegisterOneImplementationWasCall
+        XCTAssertTrue(result)
+    }
+
+    func testAddManyImplementationsUsingAddOrRegister() {
+        sut.addOrRegister(DummyDependencyMockProtocol.self, implementations: [
+            DummyDependencyType.first: { DummyDependencyOneMock() },
+            DummyDependencyType.second: { DummyDependencyTwoMock() }
+        ])
+
+        let result = dependenciesManagerMockProperties.addOrRegisterManyImplementationsWasCall
+        XCTAssertTrue(result)
+    }
+
+    func testAddOneImplementationUsingAddOrRegister() {
+        sut.addOrRegister(DummyDependencyMockProtocol.self, key: "") { DummyDependencyOneMock() }
+
+        let result = dependenciesManagerMockProperties.addOrRegisterOneImplementationWasCall
+        XCTAssertTrue(result)
+    }
+
 
     func testResetSingleton() {
         sut.resetSingleton(of: DummyDependencyMockProtocol.self)

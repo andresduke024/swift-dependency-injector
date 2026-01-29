@@ -39,4 +39,8 @@ struct ConcurrencySafeStorage<T: Sendable>: Sendable {
     func forEach(_ body: @Sendable ((key: String, value: T)) -> Void) {
         container.withLock { $0.forEach(body) }
     }
+    
+    func exists(key: String) -> Bool {
+        container.withLock { $0.keys.contains(key) } ?? false
+    }
 }

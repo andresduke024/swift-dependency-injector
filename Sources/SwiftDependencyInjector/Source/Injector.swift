@@ -82,6 +82,30 @@ public struct Injector: Sendable {
     ) {
         dependenciesManager.add(abstraction, key: key, implementation: implementation)
     }
+    
+    /// To add into the container a new set of implementations or register them if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    public func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        implementations: [String: @Sendable () -> Abstraction?]
+    ) {
+        dependenciesManager.addOrRegister(abstraction, implementations: implementations)
+    }
+
+    /// To add into the container a new implementation or register it if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - key: The key to identify the implementation that will be injected.
+    ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    public func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        key: String,
+        implementation: @Sendable @escaping () -> Abstraction?
+    ) {
+        dependenciesManager.addOrRegister(abstraction, key: key, implementation: implementation)
+    }
 
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
     /// - Parameters:
