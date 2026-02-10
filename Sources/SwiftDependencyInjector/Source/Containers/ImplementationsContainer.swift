@@ -67,9 +67,11 @@ final class ImplementationsContainer: Sendable {
             return singletonImpl
         }
 
-        let implementation = implementations.get(key: key)?()
-        singletons.set(key: key, implementation)
+        guard let implementation = implementations.get(key: key)?() else {
+            return nil
+        }
         
+        singletons.set(key: key, implementation)
         return implementation
     }
 

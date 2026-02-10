@@ -6,16 +6,21 @@
 //
 
 import Foundation
+import SwiftDependencyInjectorMacros
 
-class ApplicationSetup {
-    static func start() {
-        Injector.global.register(Repository.self, defaultDependency: RepositoryType.remote.rawValue, implementations: [
-            RepositoryType.remote.rawValue: { RemoteRepository() },
-            RepositoryType.local.rawValue: { LocalRepository() }
-        ])
-
-        Injector.global.register(NetworkManager.self, implementation: { DummyNetworkManager() })
-
-        Injector.global.register(Service.self, implementation: { DummyService() })
-    }
+@DependenciesInjector(
+    // Repositories
+    LocalRepository.self,
+    RemoteRepository.self,
+    
+    // DataSources
+    DummyNetworkManager.self,
+    
+    // Services
+    DummyService.self
+)
+struct ApplicationSetup {
+    static let shared = ApplicationSetup()
+    
+    private init() {}
 }

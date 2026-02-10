@@ -6,15 +6,15 @@
 //
 
 import Foundation
+import SwiftDependencyInjectorMacros
 
 protocol Service: Sendable {
     func getData() -> [Int]
 }
 
+@InjectableDependency(of: Service.self)
+@InjectedConstructor(Repository.self)
 struct DummyService: Service  {
-    @Inject
-    private var repository: Repository
-
     func getData() -> [Int] {
         repository.fetch()
     }

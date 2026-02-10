@@ -9,7 +9,7 @@ import Foundation
 
 class App {
     init() {
-        ApplicationSetup.start()
+        ApplicationSetup.shared.startInjection()
     }
 
     func main() async -> [Int] {
