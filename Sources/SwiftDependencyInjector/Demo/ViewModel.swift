@@ -6,13 +6,13 @@
 //
 
 import Foundation
+import SwiftDependencyInjectorMacros
 
+@InjectedConstructor(
+    Service.self,
+    NetworkManager.self
+)
 class ViewModel {
-    @Inject
-    private var service: Service
-
-    @Inject(injection: .singleton)
-    private var networkManager: NetworkManager
 
     var data: [Int] = []
 

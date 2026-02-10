@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SwiftDependencyInjectorMacros
 
 protocol NetworkManager: Sendable {
     func validateConnection() async
 }
 
+@InjectableDependency(of: NetworkManager.self)
 actor DummyNetworkManager: NetworkManager  {
     func validateConnection() async {}
 }

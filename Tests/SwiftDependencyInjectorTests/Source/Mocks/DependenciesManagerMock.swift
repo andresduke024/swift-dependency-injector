@@ -13,6 +13,8 @@ class DependenciesManagerMockProperties {
     var registerOneImplementationWasCall: Bool = false
     var addManyImplementationsWasCall: Bool = false
     var addOneImplementationWasCall: Bool = false
+    var addOrRegisterManyImplementationsWasCall: Bool = false
+    var addOrRegisterOneImplementationWasCall: Bool = false
     var resetSingletonWasCall: Bool = false
     var getWasCall: Bool = false
     var removeWasCall: Bool = false
@@ -52,6 +54,21 @@ class DependenciesManagerMock: @unchecked Sendable, DependenciesManagerProtocol 
         implementation initializer: @escaping () -> Abstraction?
     ) {
         properties.addOneImplementationWasCall = true
+    }
+    
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        implementations: [String: @Sendable () -> Abstraction?]
+    ) {
+        properties.addOrRegisterManyImplementationsWasCall = true
+    }
+    
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        key: String,
+        implementation initializer: @escaping () -> Abstraction?
+    ) {
+        properties.addOrRegisterOneImplementationWasCall = true
     }
     
     func resetSingleton<Abstraction: Sendable>(

@@ -51,6 +51,27 @@ protocol DependenciesManagerProtocol: Sendable {
         key: String,
         implementation initializer: @Sendable @escaping () -> Abstraction?
     )
+    
+    /// To add into the container a new set of implementations or register them if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        implementations: [String: @Sendable () -> Abstraction?]
+    )
+
+    /// To add into the container a new implementation or register it if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - key: The key to identify the implementation that will be injected.
+    ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        key: String,
+        implementation initializer: @Sendable @escaping () -> Abstraction?
+    )
+    
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
     /// - Parameters:
     ///   - abstraction: Generic type. The protocol (already registered) to the one we want to reset the implementation or implementations used as singletons.

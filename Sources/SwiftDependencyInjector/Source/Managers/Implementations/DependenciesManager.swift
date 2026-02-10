@@ -79,6 +79,30 @@ final class DependenciesManager: DependenciesManagerProtocol {
     ) {
         set(abstraction, registrationType: .update, key: key, implementation: initializer)
     }
+    
+    /// To add into the container a new set of implementations or register them if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - implementations: A dictionary that contains a unique key for every implementation and a closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        implementations: [String: @Sendable () -> Abstraction?]
+    ) {
+        set(abstraction, registrationType: .updateOrCreate, implementations: implementations)
+    }
+
+    /// To add into the container a new implementation or register it if not exists.
+    /// - Parameters:
+    ///   - abstraction: Generic type. The protocol to register as dependency.
+    ///   - key: The key to identify the implementation that will be injected.
+    ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
+    func addOrRegister<Abstraction: Sendable>(
+        _ abstraction: Abstraction.Type,
+        key: String,
+        implementation initializer: @Sendable @escaping () -> Abstraction?
+    ) {
+        set(abstraction, registrationType: .updateOrCreate, key: key, implementation: initializer)
+    }
 
     /// To register or update into the container a new abstraction and its corresponding implementations.
     /// - Parameters:
@@ -146,8 +170,10 @@ final class DependenciesManager: DependenciesManagerProtocol {
             return
         }
 
-        if initialRegistrationType == .update {
-            completion(abstractionName, .update)
+        let allowList: [ RegistrationType ] = [ .update, .updateOrCreate ]
+        
+        if allowList.contains(where: { $0 == initialRegistrationType }) {
+            completion(abstractionName, initialRegistrationType)
             return
         }
 
@@ -169,7 +195,7 @@ final class DependenciesManager: DependenciesManagerProtocol {
             return
         }
 
-        guard container.get(key: abstractionName) == nil else {
+        guard !container.exists(key: abstractionName) else {
             Logger.log(.abstractionAlreadyRegistered(abstractionName, context))
             return
         }
@@ -252,12 +278,16 @@ final class DependenciesManager: DependenciesManagerProtocol {
         key: String,
         implementations: InitializersContainer
     ) {
-        if container.get(key: abstractionName) == nil {
-            create(abstractionName: abstractionName, key: key, implementations: implementations)
-            return
-        }
-
-        update(abstractionName: abstractionName, implementations: implementations)
+        let registrationType = container.exists(key: abstractionName)
+            ? RegistrationType.update
+            : RegistrationType.create
+        
+        saveDependencies(
+            abstractionName: abstractionName,
+            key: key,
+            implementations: implementations,
+            registrationType
+        )
     }
 
     /// To reset a specific or all the instances of a singleton dependency stored in the container.
