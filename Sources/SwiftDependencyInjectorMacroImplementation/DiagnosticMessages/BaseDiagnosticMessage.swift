@@ -7,7 +7,7 @@
 
 import SwiftDiagnostics
 
-protocol BaseDiagnosticMessage: DiagnosticMessage {
+protocol BaseDiagnosticMessage: DiagnosticMessage, Error {
     var id: String { get }
     
     var domain: String { get }

@@ -5,11 +5,7 @@
 //  Created by Andres Duque on 11/01/26.
 //
 
-import SwiftDiagnostics
-
-struct InvalidSelfTypeDiagnostic: InjectedConstructorDiagnosticBase {
-    var id: String { "InvalidSelfType" }
-    
+struct InjectedConstructorInvalidSelfTypeDiagnostic: InjectedConstructorDiagnosticBase, InvalidSelfTypeDiagnostic {
     var message: String {
         """
         Invalid dependency. Only `Type.self` or \

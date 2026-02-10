@@ -10,6 +10,8 @@ import SwiftSyntax
 struct Constants {
     struct Macros {
         static let injectedConstructor: String = "InjectedConstructor"
+        static let injectableDependency: String = "InjectableDependency"
+        static let dependenciesInjector: String = "DependenciesInjector"
     }
     
     struct Trivia {
@@ -34,10 +36,20 @@ struct Constants {
         
         static let injectorGlobalProperty = "global"
         
+        static let injectorAddOrRegisterMethod = "addOrRegister"
+        
         static let getMethod = "get"
         
         static let nameProperty = "name"
         
         static let initParameterClass = "InitParameter"
+        
+        static let observationIgnoredMacro = "ObservationIgnored"
+        
+        static let dependenciesInjectorProtocol = "DependenciesInjectorProtocol"
+        
+        static let injectableDependencyProtocol = "InjectableDependencyProtocol"
+        
+        static let injectableDependencyArgsModelName = "InjectableDependencyArgs"
     }
 }

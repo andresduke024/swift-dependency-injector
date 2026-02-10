@@ -8,4 +8,5 @@
 enum MacroError: Error {
     case invalidArguments
     case invalidDependency
+    case invalidConstruction
 }

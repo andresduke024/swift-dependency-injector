@@ -1,8 +1,8 @@
 //
-//  BaseMacro.swift
+//  BaseExtensionMacro.swift
 //  SwiftDependencyInjector
 //
-//  Created by Andres Duque on 11/01/26.
+//  Created by Andres Duque on 30/01/26.
 //
 
 import SwiftSyntax
@@ -10,32 +10,35 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-public protocol BaseMacro {
+public protocol BaseExtensionMacro: ExtensionMacro {
     static func start(
-        for macro: Macros,
+        for macro: ExtensionMacros,
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
+        providingExtensionsOf type: (some TypeSyntaxProtocol)?,
         conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
-    ) throws -> [DeclSyntax]
+    ) throws -> [ExtensionDeclSyntax]
 }
 
-public extension BaseMacro {
+public extension BaseExtensionMacro {
     static func start(
-        for macro: Macros,
+        for macro: ExtensionMacros,
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
+        providingExtensionsOf type: (some TypeSyntaxProtocol)?,
         conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
-    ) throws -> [DeclSyntax] {
-        let arguments = MacroArguments(
+    ) throws -> [ExtensionDeclSyntax] {
+        let arguments = ExtensionMacroArguments(
             node: node,
             declaration: declaration,
+            type: type,
             protocols: protocols,
             context: context
         )
         
-        let creator = MacroCreatorFactory.get(
+        let creator = ExtensionMacroCreatorFactory.get(
             for: macro,
             with: arguments
         )

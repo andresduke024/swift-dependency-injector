@@ -2,13 +2,12 @@
 //  MissingSelfDiagnostic.swift
 //  SwiftDependencyInjector
 //
-//  Created by Andres Duque on 11/01/26.
+//  Created by Andres Duque on 9/02/26.
 //
 
-import SwiftDiagnostics
+protocol MissingSelfDiagnostic: BaseDiagnosticMessage {}
 
-struct MissingSelfDiagnostic: InjectedConstructorDiagnosticBase {
-    
+extension MissingSelfDiagnostic {
     var id: String { "MissingSelf" }
     
     var message: String {

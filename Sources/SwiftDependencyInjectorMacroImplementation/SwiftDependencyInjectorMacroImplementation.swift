@@ -14,6 +14,9 @@ import SwiftSyntaxMacros
 struct SwiftDependencyInjectorMacroPlugin: CompilerPlugin {
     var providingMacros: [Macro.Type] = [
         InjectedConstructorMacro.self,
-        InitParameterMacro.self
+        ObservableInjectedConstructorMacro.self,
+        InitParameterMacro.self,
+        InjectableDependencyMacro.self,
+        DependenciesInjectorMacro.self
     ]
 }

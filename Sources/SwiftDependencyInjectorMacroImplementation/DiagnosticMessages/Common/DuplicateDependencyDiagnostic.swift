@@ -2,16 +2,16 @@
 //  DuplicateDependencyDiagnostic.swift
 //  SwiftDependencyInjector
 //
-//  Created by Andres Duque on 11/01/26.
+//  Created by Andres Duque on 9/02/26.
 //
 
-import SwiftDiagnostics
+protocol DuplicateDependencyDiagnostic: BaseDiagnosticMessage {
+    var typeName: String { get }
+}
 
-struct DuplicateDependencyDiagnostic: InjectedConstructorDiagnosticBase {
-    let typeName: String
-    
+extension DuplicateDependencyDiagnostic {
     var id: String { "DuplicateDependency" }
-
+    
     var message: String {
         """
         Duplicate dependency `\(typeName)` declared directly. Remove the duplicate or use `Dependency(...)`.

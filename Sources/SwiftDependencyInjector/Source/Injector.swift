@@ -101,7 +101,7 @@ public struct Injector: Sendable {
     ///   - initializer: A closure which has the job to create a new instance of the given implementation ( classes that conforms to InjectableDependency protocol ).
     public func addOrRegister<Abstraction: Sendable>(
         _ abstraction: Abstraction.Type,
-        key: String,
+        key: String = "",
         implementation: @Sendable @escaping () -> Abstraction?
     ) {
         dependenciesManager.addOrRegister(abstraction, key: key, implementation: implementation)
